@@ -2,8 +2,8 @@
 
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
-**Last Updated:** 2026-08-27  
-**Current Status:** Phase 0 (Planning and Architecture) In Progress / Baseline Complete  
+**Last Updated:** 2026-08-28  
+**Current Status:** Phase 1 (Project Skeleton & Development Environment) Completed  
 
 ---
 
@@ -11,8 +11,8 @@
 
 | Phase | Description | Status | Target Completion | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Phase 0** | Planning and Architecture Foundation | **IN PROGRESS** | Day 1 | Requirements, Schemas, API Specs, ADRs drafted |
-| **Phase 1** | Project Skeleton & Development Environment | **NOT STARTED** | Day 2 | Docker Compose (Postgres+Neo4j), FastAPI & Vite React |
+| **Phase 0** | Planning and Architecture Foundation | **COMPLETED** | Day 1 | Requirements, Schemas, API Specs, ADRs drafted |
+| **Phase 1** | Project Skeleton & Development Environment | **COMPLETED** | Day 2 | Docker Compose (Postgres+Neo4j), FastAPI & Vite React verified |
 | **Phase 2** | Authentication (JWT) | **NOT STARTED** | Day 3 | Registration, login, auth context |
 | **Phase 3** | GitHub Repository Ingestion & SSE | **NOT STARTED** | Day 5 | Git clone worker, job tracking, live SSE progress |
 | **Phase 4** | Repository Scanner & File Filter | **NOT STARTED** | Day 6 | .gitignore parsing, LOC limits, file indexer |
@@ -48,4 +48,16 @@
 - [x] Resolve all technical ambiguities and document ADRs (`DECISIONS.md`).
 - [x] Author concise project README (`README.md`).
 
-*(Subsequent phases will be tracked here upon execution)*
+### Phase 1: Project Skeleton and Development Environment
+- [x] Configure `docker-compose.yml` with `pgvector/pgvector:pg16` and `neo4j:5-community` services.
+- [x] Scaffold FastAPI application with Pydantic settings, CORS middleware, and structured logging.
+- [x] Implement database connection managers with non-blocking health check verification (`check_postgres_connection`, `check_neo4j_connection`).
+- [x] Create unauthenticated `GET /health` and `GET /` endpoints.
+- [x] Scaffold Vite + React + TypeScript + Tailwind CSS frontend with `@xyflow/react` and `lucide-react`.
+- [x] Implement frontend API service calling `GET /health` and displaying live status on placeholder landing page.
+- [x] Create `.gitignore` to prevent committing secrets, caches, virtual environments, and node_modules.
+- [x] Verify end-to-end database connectivity (PostgreSQL pgvector extension verified; Neo4j Bolt driver verified).
+- [x] Verify containerized build (`docker compose build backend` & `docker compose up`).
+- [x] Verify frontend dev server and TypeScript compilation (`npm run build` passing).
+- [x] Document ADR-009 for local host PostgreSQL port mapping in `DECISIONS.md`.
+- [x] Update `README.md` with complete local development instructions.

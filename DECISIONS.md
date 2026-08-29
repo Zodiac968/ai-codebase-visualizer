@@ -2,7 +2,7 @@
 
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
-**Version:** 1.0 (Academic MVP)  
+**Version:** 1.1 (Phase 1 Baseline)  
 **Status:** Approved  
 
 ---
@@ -74,6 +74,13 @@
 - **Alternatives Considered:** Local zip file upload, GitHub OAuth private repository integration, local filesystem path binding.
 - **Decision:** Support **Public HTTPS GitHub URLs** for V1.
 - **Rationale:** Provides the cleanest user experience without requiring users to configure GitHub OAuth apps or upload local ZIP archives. Public URLs can be cloned directly via `git clone --depth 1`.
+
+---
+
+### ADR-009: PostgreSQL Host Port Mapping (5433:5432) for Local Development
+- **Context:** In developer environments where a native Windows PostgreSQL service is already active on host port 5432, Docker Compose port binding collisions cause authentication failures against the wrong database instance.
+- **Decision:** Map host port `5433` to Docker container port `5432` (`5433:5432`) in `docker-compose.yml` and configure local host `DATABASE_URL` as `postgresql://postgres:postgres@localhost:5433/codebase_visualizer`. Inside the internal Docker Compose network, containerized backend services continue communicating on default port `5432`.
+- **Rationale:** Guarantees zero host port conflicts with existing developer databases while maintaining standard internal container networking.
 
 ---
 

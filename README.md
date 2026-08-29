@@ -17,9 +17,9 @@ An academic software engineering platform that automatically ingests public GitH
 ## Technology Stack
 
 - **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, React Flow (`@xyflow/react`)
-- **Backend**: Python 3.11, FastAPI, Tree-sitter (`tree-sitter-python`, `tree-sitter-javascript`, `tree-sitter-typescript`), Pydantic
+- **Backend**: Python 3.11/3.12, FastAPI, SQLAlchemy, Tree-sitter, Pydantic v2
 - **Databases**:
-  - **Neo4j 5+**: Software Knowledge Graph (Nodes, Calls, Imports, Routes, DB Models)
+  - **Neo4j 5+ Community**: Software Knowledge Graph (Nodes, Calls, Imports, Routes, DB Models)
   - **PostgreSQL 16 + pgvector**: Relational metadata, analysis jobs, chat history, and 384d vector embeddings
 - **AI & Embeddings**:
   - **Embeddings**: Local `sentence-transformers/all-MiniLM-L6-v2` (384-dim, CPU inference)
@@ -29,24 +29,101 @@ An academic software engineering platform that automatically ingests public GitH
 
 ---
 
-## System Architecture
+## Local Development Setup
 
-```text
-[ React Flow + TypeScript Frontend ]
-                 │
-      REST APIs  │  SSE Progress Stream
-                 ▼
-     [ FastAPI Backend Engine ]
-     ├─ Git Ingestion & File Scanner
-     ├─ Tree-sitter AST Multi-Language Parser
-     ├─ Local AST Chunker & 384d Embedder
-     └─ Hybrid RAG & Groq LLM Client
-           │                     │
-           ▼                     ▼
-   [ Neo4j Graph DB ]    [ PostgreSQL + pgvector ]
-   - Architecture Graph  - Relational Metadata
-   - Call & Import Edges - 384d Vector Embeddings
-   - Execution Paths     - Chat Sessions & History
+### Prerequisites
+
+- **Docker & Docker Compose** (Docker Desktop on Windows/Mac, Docker Engine on Linux)
+- **Python 3.11+**
+- **Node.js v20+** and **npm**
+
+---
+
+### Step 1: Start Database Infrastructure (Docker Compose)
+
+Start PostgreSQL (with `pgvector`) and Neo4j Community in the background:
+
+```bash
+docker compose up -d postgres neo4j
+```
+
+Verify running containers:
+
+```bash
+docker compose ps
+```
+
+*Note: PostgreSQL is mapped to host port `5433` (`5433:5432`) to prevent port conflicts with any pre-existing local PostgreSQL service.*
+
+---
+
+### Step 2: Start Backend (FastAPI)
+
+#### Option A: Local Virtualenv (Recommended for Development)
+
+```bash
+cd backend
+python -m venv .venv
+
+# On Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env
+
+uvicorn app.main:app --reload --port 8000
+```
+
+#### Option B: Containerized Backend (Docker Compose)
+
+```bash
+docker compose up -d backend
+```
+
+---
+
+### Step 3: Start Frontend (React + Vite)
+
+In a separate terminal:
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+
+npm run dev
+```
+
+---
+
+## Local Development URLs
+
+| Service | URL | Description |
+| :--- | :--- | :--- |
+| **Frontend UI** | [http://localhost:5173](http://localhost:5173) | Vite React SPA development server |
+| **Backend API** | [http://localhost:8000](http://localhost:8000) | FastAPI application root |
+| **Health Check** | [http://localhost:8000/health](http://localhost:8000/health) | System & DB connectivity status |
+| **Swagger API Docs** | [http://localhost:8000/docs](http://localhost:8000/docs) | Interactive OpenAPI documentation |
+| **ReDoc API Docs** | [http://localhost:8000/redoc](http://localhost:8000/redoc) | Alternative API documentation |
+| **Neo4j Browser UI** | [http://localhost:7474](http://localhost:7474) | Neo4j query console (`neo4j` / `password123`) |
+| **PostgreSQL Port** | `localhost:5433` | Database: `codebase_visualizer` (`postgres` / `postgres`) |
+
+---
+
+## Stopping Infrastructure
+
+To stop all Docker containers:
+
+```bash
+docker compose down
+```
+
+To stop containers and delete stored volumes:
+
+```bash
+docker compose down -v
 ```
 
 ---
@@ -66,5 +143,7 @@ An academic software engineering platform that automatically ingests public GitH
 
 ## Current Status
 
-- **Current Phase**: **Phase 0 (Planning and Architecture)** — Baseline Complete
-- **Next Phase**: **Phase 1 (Project Skeleton & Development Environment)**
+- **Completed Phases**:
+  - **Phase 0**: Planning and Architecture Foundation
+  - **Phase 1**: Project Skeleton & Development Environment
+- **Next Phase**: **Phase 2 (Authentication)**
