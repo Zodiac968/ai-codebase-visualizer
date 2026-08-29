@@ -73,6 +73,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 
+# Run database migrations
+alembic upgrade head
+
 uvicorn app.main:app --reload --port 8000
 ```
 
@@ -136,7 +139,7 @@ docker compose down -v
 - [`DATABASE_SCHEMA.md`](DATABASE_SCHEMA.md): PostgreSQL relational/pgvector schemas and Neo4j graph model.
 - [`API_SPEC.md`](API_SPEC.md): Complete REST and SSE API endpoint contracts.
 - [`DECISIONS.md`](DECISIONS.md): Architecture Decision Records (ADRs) and ambiguity resolutions.
-- [`AGENTS.md`](AGENTS.md): Strict development rules and session handoff guidelines for AI coding agents.
+- [`AGENTS.md`](AGENTS.md): Strict operational rules and guidelines for AI coding agents.
 - [`PROGRESS.md`](PROGRESS.md): Development progress tracker.
 
 ---
@@ -146,4 +149,5 @@ docker compose down -v
 - **Completed Phases**:
   - **Phase 0**: Planning and Architecture Foundation
   - **Phase 1**: Project Skeleton & Development Environment
-- **Next Phase**: **Phase 2 (Authentication)**
+  - **Phase 2**: Simple JWT Authentication & User Isolation
+- **Next Phase**: **Phase 3 (GitHub Repository Ingestion)**

@@ -2,8 +2,8 @@
 
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
-**Last Updated:** 2026-08-28  
-**Current Status:** Phase 1 (Project Skeleton & Development Environment) Completed  
+**Last Updated:** 2026-08-29  
+**Current Status:** Phase 2 (Simple JWT Authentication) Completed  
 
 ---
 
@@ -13,7 +13,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Phase 0** | Planning and Architecture Foundation | **COMPLETED** | Day 1 | Requirements, Schemas, API Specs, ADRs drafted |
 | **Phase 1** | Project Skeleton & Development Environment | **COMPLETED** | Day 2 | Docker Compose (Postgres+Neo4j), FastAPI & Vite React verified |
-| **Phase 2** | Authentication (JWT) | **NOT STARTED** | Day 3 | Registration, login, auth context |
+| **Phase 2** | Authentication (JWT) | **COMPLETED** | Day 3 | Registration, login, /me, bcrypt, JWT dependency, React AuthContext |
 | **Phase 3** | GitHub Repository Ingestion & SSE | **NOT STARTED** | Day 5 | Git clone worker, job tracking, live SSE progress |
 | **Phase 4** | Repository Scanner & File Filter | **NOT STARTED** | Day 6 | .gitignore parsing, LOC limits, file indexer |
 | **Phase 5** | Tree-sitter Python Analyzer | **NOT STARTED** | Day 9 | Python AST parsing, symbols, calls, routes |
@@ -61,3 +61,15 @@
 - [x] Verify frontend dev server and TypeScript compilation (`npm run build` passing).
 - [x] Document ADR-009 for local host PostgreSQL port mapping in `DECISIONS.md`.
 - [x] Update `README.md` with complete local development instructions.
+
+### Phase 2: Simple JWT Authentication
+- [x] Implement SQLAlchemy `User` model with UUID primary key, lowercase unique email index, bcrypt hash, and timestamps.
+- [x] Configure Alembic migration framework (`alembic.ini`, `alembic/env.py`) and execute migration `0001_create_users_table`.
+- [x] Implement password hashing and verification with `bcrypt`.
+- [x] Implement JWT token signing and verification with `pyjwt` (`create_access_token`, `decode_access_token`).
+- [x] Create reusable FastAPI authentication dependency `get_current_user` enforcing Bearer token validation.
+- [x] Implement `POST /api/v1/auth/register`, `POST /api/v1/auth/login`, and `GET /api/v1/auth/me` endpoints.
+- [x] Implement frontend authentication API services (`registerUser`, `loginUser`, `fetchCurrentUser`).
+- [x] Create React `AuthContext` (`AuthProvider`, `useAuth`) with `localStorage` token persistence and automatic session restoration.
+- [x] Create `AuthForm` (Login/Register toggle) and `UserDashboard` (with interactive protected `/me` test).
+- [x] Verify end-to-end authentication flow (duplicate registration prevention, invalid password rejection, valid JWT verification, unauthenticated rejection).
