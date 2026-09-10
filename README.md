@@ -150,4 +150,5 @@ docker compose down -v
   - **Phase 0**: Planning and Architecture Foundation
   - **Phase 1**: Project Skeleton & Development Environment
   - **Phase 2**: Simple JWT Authentication & User Isolation
-- **Next Phase**: **Phase 3 (GitHub Repository Ingestion)**
+  - **Phase 3**: GitHub Repository Ingestion & SSE Progress Streaming
+- **Next Phase**: **Phase 4 (Repository Scanner & File Filter)**

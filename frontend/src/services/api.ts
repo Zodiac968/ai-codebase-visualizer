@@ -1,4 +1,9 @@
 import { User, AuthResponse } from '../types/auth';
+import {
+  Repository,
+  RepositoryImportResponse,
+  ProgressEventPayload,
+} from '../types/repository';
 
 export interface HealthResponse {
   status: string;
@@ -137,4 +142,146 @@ export async function fetchCurrentUser(
       error: err?.message || 'Network error fetching current user',
     };
   }
+}
+
+/**
+ * Import Public GitHub Repository
+ */
+export async function importRepository(
+  githubUrl: string,
+  defaultBranch: string = 'main',
+  token: string
+): Promise<{ data: RepositoryImportResponse | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/import`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        github_url: githubUrl,
+        default_branch: defaultBranch,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Import failed (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error initiating repository import',
+    };
+  }
+}
+
+/**
+ * List User Repositories
+ */
+export async function fetchRepositories(
+  token: string
+): Promise<{ data: Repository[] | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Failed to fetch repositories (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error fetching repositories',
+    };
+  }
+}
+
+/**
+ * Delete Repository
+ */
+export async function deleteRepository(
+  repositoryId: string,
+  token: string
+): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/${repositoryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok && response.status !== 204) {
+      const data = await response.json().catch(() => ({}));
+      return { success: false, error: data?.detail || `Failed to delete repository` };
+    }
+
+    return { success: true, error: null };
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err?.message || 'Network error deleting repository',
+    };
+  }
+}
+
+/**
+ * Subscribe to SSE Analysis / Ingestion Progress Stream
+ */
+export function subscribeRepositoryProgress(
+  repositoryId: string,
+  token: string,
+  onProgress: (event: ProgressEventPayload) => void,
+  onComplete: () => void,
+  onError: (err: any) => void
+): () => void {
+  const sseUrl = `${API_BASE_URL}/api/v1/repositories/${repositoryId}/progress?token=${encodeURIComponent(token)}`;
+  const eventSource = new EventSource(sseUrl);
+
+  eventSource.addEventListener('progress', (e: MessageEvent) => {
+    try {
+      const payload: ProgressEventPayload = JSON.parse(e.data);
+      onProgress(payload);
+
+      if (['COMPLETED', 'FAILED', 'READY'].includes(payload.status)) {
+        eventSource.close();
+        onComplete();
+      }
+    } catch (err) {
+      console.warn('Failed to parse SSE payload:', e.data, err);
+    }
+  });
+
+  eventSource.addEventListener('close', () => {
+    eventSource.close();
+    onComplete();
+  });
+
+  eventSource.onerror = (err) => {
+    console.debug('SSE connection closed or error:', err);
+    eventSource.close();
+    onError(err);
+  };
+
+  // Return unsubscribe / cleanup function
+  return () => {
+    eventSource.close();
+  };
 }

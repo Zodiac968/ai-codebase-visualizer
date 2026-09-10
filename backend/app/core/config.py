@@ -26,12 +26,22 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "password123"
 
-    # Future Phase Placeholders
-    GROQ_API_KEY: str = ""
-    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    # Repository Storage and Ingestion Safeguards
+    REPOSITORY_STORAGE_PATH: str = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "repos"
+    )
+    MAX_REPOSITORY_SIZE_MB: int = 50
+    MAX_REPOSITORY_FILES: int = 2000
+    GIT_CLONE_TIMEOUT_SECONDS: int = 120
+
+    # JWT Authentication
     JWT_SECRET: str = "dev_secret_key_change_in_production_1234567890"
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+
+    # Future Phase Placeholders
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod

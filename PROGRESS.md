@@ -2,8 +2,8 @@
 
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
-**Last Updated:** 2026-08-29  
-**Current Status:** Phase 2 (Simple JWT Authentication) Completed  
+**Last Updated:** 2026-09-10  
+**Current Status:** Phase 3 (GitHub Repository Ingestion) Completed  
 
 ---
 
@@ -14,7 +14,7 @@
 | **Phase 0** | Planning and Architecture Foundation | **COMPLETED** | Day 1 | Requirements, Schemas, API Specs, ADRs drafted |
 | **Phase 1** | Project Skeleton & Development Environment | **COMPLETED** | Day 2 | Docker Compose (Postgres+Neo4j), FastAPI & Vite React verified |
 | **Phase 2** | Authentication (JWT) | **COMPLETED** | Day 3 | Registration, login, /me, bcrypt, JWT dependency, React AuthContext |
-| **Phase 3** | GitHub Repository Ingestion & SSE | **NOT STARTED** | Day 5 | Git clone worker, job tracking, live SSE progress |
+| **Phase 3** | GitHub Repository Ingestion & SSE | **COMPLETED** | Day 5 | Safe Git clone worker, 50MB safeguard, SSE progress stream, Repo list UI |
 | **Phase 4** | Repository Scanner & File Filter | **NOT STARTED** | Day 6 | .gitignore parsing, LOC limits, file indexer |
 | **Phase 5** | Tree-sitter Python Analyzer | **NOT STARTED** | Day 9 | Python AST parsing, symbols, calls, routes |
 | **Phase 6** | JavaScript / TypeScript Analyzer | **NOT STARTED** | Day 12 | JS/TS AST parsing, Express routes, symbols |
@@ -73,3 +73,13 @@
 - [x] Create React `AuthContext` (`AuthProvider`, `useAuth`) with `localStorage` token persistence and automatic session restoration.
 - [x] Create `AuthForm` (Login/Register toggle) and `UserDashboard` (with interactive protected `/me` test).
 - [x] Verify end-to-end authentication flow (duplicate registration prevention, invalid password rejection, valid JWT verification, unauthenticated rejection).
+
+### Phase 3: GitHub Repository Ingestion
+- [x] Implement SQLAlchemy models for `Repository` and `AnalysisJob` with foreign keys and cascade delete rules.
+- [x] Create and execute Alembic migration `0002_create_repositories_and_analysis_jobs`.
+- [x] Implement GitHub URL validation and normalization utility (`validate_and_parse_github_url`).
+- [x] Implement safe Git cloning service with path traversal defense, 50MB / 2,000 file size safeguards, and cleanup handlers.
+- [x] Implement Server-Sent Events (SSE) real-time progress broadcasting manager (`subscribe_progress`, `publish_progress`).
+- [x] Implement REST endpoints: `POST /api/v1/repositories/import`, `GET /api/v1/repositories`, `GET /api/v1/repositories/{id}`, `GET /api/v1/repositories/{id}/status`, `GET /api/v1/repositories/{id}/progress` (SSE), and `DELETE /api/v1/repositories/{id}`.
+- [x] Implement frontend `RepositoryImportCard` (with live SSE progress bar) and `RepositoryList` (with status badges and deletion).
+- [x] Verify end-to-end repository ingestion, progress streaming, error recovery on nonexistent repos, user isolation, and deletion on containerized backend and React frontend.
