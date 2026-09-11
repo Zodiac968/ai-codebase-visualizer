@@ -285,3 +285,67 @@ export function subscribeRepositoryProgress(
     eventSource.close();
   };
 }
+
+/**
+ * Scan Repository Workspace
+ */
+export async function scanRepository(
+  repositoryId: string,
+  token: string
+): Promise<{ data: import('../types/scanner').RepositoryScanResponse | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/${repositoryId}/scan`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Scan failed (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error scanning repository',
+    };
+  }
+}
+
+/**
+ * Fetch Scanned Files for Repository
+ */
+export async function fetchRepositoryFiles(
+  repositoryId: string,
+  token: string
+): Promise<{ data: import('../types/scanner').FileListResponse | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/${repositoryId}/files`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Failed to fetch files (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error fetching files',
+    };
+  }
+}

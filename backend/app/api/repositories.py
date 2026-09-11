@@ -10,50 +10,27 @@ from app.db.postgres import get_db
 from app.models.user import User
 from app.models.repository import Repository
 from app.models.analysis_job import AnalysisJob
+from app.models.file import FileRecord
 from app.schemas.repository import (
     RepositoryImportRequest,
     RepositoryImportResponse,
     RepositoryResponse,
 )
 from app.schemas.analysis_job import AnalysisJobResponse
+from app.schemas.scanner import (
+    FileMetadata,
+    RepositoryScanResponse,
+    FileListResponse,
+)
 from app.core.security import get_current_user, decode_access_token
 from app.core.config import settings
 from app.core.logging import logger
 from app.services.github import validate_and_parse_github_url
 from app.services.clone import execute_clone_task, cleanup_directory
 from app.services.progress import subscribe_progress
+from app.services.scanner import scan_and_save_repository, classify_file
 
 router = APIRouter(prefix="/repositories", tags=["Repositories"])
-
-
-def get_current_user_from_token_or_query(
-    token: Optional[str] = Query(None),
-    db: Session = Depends(get_db),
-    header_user: Optional[User] = Depends(get_current_user),
-) -> User:
-    """
-    Helper dependency to authenticate SSE connections either via Authorization Bearer header
-    or via ?token= query parameter (which standard EventSource supports).
-    """
-    if header_user:
-        return header_user
-
-    if token:
-        payload = decode_access_token(token)
-        if payload and payload.get("sub"):
-            try:
-                user_id = UUID(payload["sub"])
-                user = db.query(User).filter(User.id == user_id).first()
-                if user and user.is_active:
-                    return user
-            except (ValueError, TypeError):
-                pass
-
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Authentication required",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
 
 @router.post(
@@ -276,6 +253,116 @@ async def stream_repository_progress(
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no",
         },
+    )
+
+
+@router.post(
+    "/{repository_id}/scan",
+    response_model=RepositoryScanResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Scan repository workspace for source files and language metrics",
+)
+def scan_repository(
+    repository_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Walks the cloned repository workspace, discovers supported source and config files,
+    calculates LOC and size metrics, and stores file metadata in PostgreSQL.
+    """
+    repo = (
+        db.query(Repository)
+        .filter(Repository.id == repository_id, Repository.user_id == current_user.id)
+        .first()
+    )
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repository not found",
+        )
+
+    if repo.status != "READY":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Repository cannot be scanned while in '{repo.status}' state. It must be in 'READY' status.",
+        )
+
+    try:
+        scan_result = scan_and_save_repository(repository_id, db)
+        return scan_result
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error(f"Error during repository scan for {repository_id}: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Repository scan failed: {str(exc)}",
+        )
+
+
+@router.get(
+    "/{repository_id}/files",
+    response_model=FileListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List all scanned files for a repository",
+)
+def list_repository_files(
+    repository_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns all scanned files and their metadata for a repository.
+    """
+    repo = (
+        db.query(Repository)
+        .filter(Repository.id == repository_id, Repository.user_id == current_user.id)
+        .first()
+    )
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repository not found",
+        )
+
+    file_records = (
+        db.query(FileRecord)
+        .filter(FileRecord.repository_id == repository_id)
+        .order_by(FileRecord.file_path)
+        .all()
+    )
+
+    # Convert to FileMetadata list
+    file_items = []
+    for f in file_records:
+        filename = os.path.basename(f.file_path)
+        _, ext = os.path.splitext(filename)
+        is_bin = f.language == "binary"
+        lang, is_src, is_cfg = classify_file(filename, ext, is_bin)
+
+        file_items.append(
+            FileMetadata(
+                relative_path=f.file_path,
+                filename=filename,
+                extension=ext,
+                language=f.language,
+                size_bytes=f.size_bytes,
+                line_count=f.line_count,
+                is_source=is_src,
+                is_binary=is_bin,
+                is_config=is_cfg,
+                sha256_hash=f.sha256_hash,
+            )
+        )
+
+    return FileListResponse(
+        repository_id=repository_id,
+        total_files=len(file_items),
+        files=file_items,
     )
 
 

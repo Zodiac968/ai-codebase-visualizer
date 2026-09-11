@@ -3,7 +3,7 @@
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
 **Last Updated:** 2026-09-10  
-**Current Status:** Phase 3 (GitHub Repository Ingestion) Completed  
+**Current Status:** Phase 4 (Repository Scanner) Completed  
 
 ---
 
@@ -15,7 +15,7 @@
 | **Phase 1** | Project Skeleton & Development Environment | **COMPLETED** | Day 2 | Docker Compose (Postgres+Neo4j), FastAPI & Vite React verified |
 | **Phase 2** | Authentication (JWT) | **COMPLETED** | Day 3 | Registration, login, /me, bcrypt, JWT dependency, React AuthContext |
 | **Phase 3** | GitHub Repository Ingestion & SSE | **COMPLETED** | Day 5 | Safe Git clone worker, 50MB safeguard, SSE progress stream, Repo list UI |
-| **Phase 4** | Repository Scanner & File Filter | **NOT STARTED** | Day 6 | .gitignore parsing, LOC limits, file indexer |
+| **Phase 4** | Repository Scanner & File Filter | **COMPLETED** | Day 6 | Recursive walker, language detection (Py/JS/TS), binary checks, LOC counts, files table |
 | **Phase 5** | Tree-sitter Python Analyzer | **NOT STARTED** | Day 9 | Python AST parsing, symbols, calls, routes |
 | **Phase 6** | JavaScript / TypeScript Analyzer | **NOT STARTED** | Day 12 | JS/TS AST parsing, Express routes, symbols |
 | **Phase 7** | Neo4j Knowledge Graph Persistence | **NOT STARTED** | Day 14 | Cypher schema, batch insertion, graph queries |
@@ -83,3 +83,14 @@
 - [x] Implement REST endpoints: `POST /api/v1/repositories/import`, `GET /api/v1/repositories`, `GET /api/v1/repositories/{id}`, `GET /api/v1/repositories/{id}/status`, `GET /api/v1/repositories/{id}/progress` (SSE), and `DELETE /api/v1/repositories/{id}`.
 - [x] Implement frontend `RepositoryImportCard` (with live SSE progress bar) and `RepositoryList` (with status badges and deletion).
 - [x] Verify end-to-end repository ingestion, progress streaming, error recovery on nonexistent repos, user isolation, and deletion on containerized backend and React frontend.
+
+### Phase 4: Repository Scanner
+- [x] Implement SQLAlchemy model `FileRecord` mapping to `files` table with unique constraint on `(repository_id, file_path)` and cascade deletion.
+- [x] Create and execute Alembic migration `0003_create_files_table`.
+- [x] Implement robust repository scanner service (`scan_repository_directory`, `scan_and_save_repository`) supporting Python, JavaScript, and TypeScript.
+- [x] Implement directory ignoring (`.git`, `node_modules`, `__pycache__`, `.venv`, `dist`, `build`, etc.) and file ignoring (`.pyc`, `.log`, etc.).
+- [x] Implement binary file detection (extension mapping & null-byte inspection).
+- [x] Implement safe UTF-8/BOM line counting and SHA-256 file hashing without code execution.
+- [x] Implement REST endpoints `POST /api/v1/repositories/{id}/scan` and `GET /api/v1/repositories/{id}/files`.
+- [x] Implement frontend file explorer with scan triggers, language breakdown tags, file search filter, and LOC display.
+- [x] Verify end-to-end scanner execution, unauthenticated rejection, user data isolation, and state guards across backend tests and React frontend.

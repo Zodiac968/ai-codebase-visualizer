@@ -7,6 +7,11 @@ from app.schemas.repository import (
     RepositoryResponse,
 )
 from app.schemas.analysis_job import AnalysisJobResponse, ProgressEvent
+from app.schemas.scanner import (
+    FileMetadata,
+    RepositoryScanResponse,
+    FileListResponse,
+)
 
 __all__ = [
     "UserBase",
@@ -20,4 +25,7 @@ __all__ = [
     "RepositoryResponse",
     "AnalysisJobResponse",
     "ProgressEvent",
+    "FileMetadata",
+    "RepositoryScanResponse",
+    "FileListResponse",
 ]

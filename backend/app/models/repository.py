@@ -73,7 +73,8 @@ class Repository(Base):
 
     # Relationships
     user = relationship("User", backref="repositories")
-    jobs = relationship("AnalysisJob", back_populates="repository", cascade="all, delete-orphan")
+    jobs = relationship("AnalysisJob", back_populates="repository", cascade="all, delete-orphan", passive_deletes=True)
+    files = relationship("FileRecord", back_populates="repository", cascade="all, delete-orphan", passive_deletes=True)
 
     def __repr__(self) -> str:
         return f"<Repository(id={self.id}, name={self.name}, status={self.status})>"
