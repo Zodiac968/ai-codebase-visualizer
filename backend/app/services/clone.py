@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import asyncio
+from typing import Optional
 from uuid import UUID
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
@@ -212,3 +213,61 @@ def execute_clone_task(repository_id: UUID, job_id: UUID, github_url: str, defau
 
     finally:
         db.close()
+
+
+def ensure_repository_workspace(repo: Repository, db: Optional[Session] = None) -> str:
+    """
+    Checks if repository workspace exists on the current runtime filesystem.
+    If missing or pointing to another runtime's path, attempts resolution via
+    settings.REPOSITORY_STORAGE_PATH or automatically re-clones from repo.github_url.
+    Returns the valid source_dir path.
+    """
+    # 1. Check if the saved repo.local_path exists on this filesystem
+    if repo.local_path and os.path.exists(repo.local_path):
+        return repo.local_path
+
+    # 2. Check if the repo source directory exists in current REPOSITORY_STORAGE_PATH
+    expected_source_dir = os.path.join(settings.REPOSITORY_STORAGE_PATH, str(repo.id), "source")
+    if os.path.exists(expected_source_dir):
+        if repo.local_path != expected_source_dir:
+            repo.local_path = expected_source_dir
+            if db:
+                db.commit()
+        return expected_source_dir
+
+    # 3. Neither path exists -> Re-clone automatically (self-healing)
+    logger.info(
+        f"Workspace missing for repo {repo.id} ({repo.name}). "
+        f"Attempting self-healing clone from {repo.github_url}..."
+    )
+    target_repo_dir = os.path.join(settings.REPOSITORY_STORAGE_PATH, str(repo.id))
+    os.makedirs(settings.REPOSITORY_STORAGE_PATH, exist_ok=True)
+    cleanup_directory(target_repo_dir)
+    os.makedirs(target_repo_dir, exist_ok=True)
+
+    clone_cmd = [
+        "git",
+        "clone",
+        "--depth",
+        "1",
+        "--single-branch",
+        repo.github_url,
+        expected_source_dir,
+    ]
+    result = subprocess.run(
+        clone_cmd,
+        capture_output=True,
+        text=True,
+        timeout=settings.GIT_CLONE_TIMEOUT_SECONDS,
+        check=False,
+    )
+    if result.returncode != 0:
+        err_output = result.stderr.strip() or result.stdout.strip() or "Git clone failed"
+        raise RuntimeError(f"Failed to restore repository workspace from {repo.github_url}: {err_output}")
+
+    repo.local_path = expected_source_dir
+    if db:
+        db.commit()
+
+    logger.info(f"Successfully self-healed repository workspace for {repo.id} at {expected_source_dir}")
+    return expected_source_dir

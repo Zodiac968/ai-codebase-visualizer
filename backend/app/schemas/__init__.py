@@ -12,6 +12,15 @@ from app.schemas.scanner import (
     RepositoryScanResponse,
     FileListResponse,
 )
+from app.schemas.parser import (
+    ExtractedSymbol,
+    ExtractedImport,
+    ExtractedRoute,
+    FileAnalysisResult,
+    PythonAnalysisResponse,
+    SymbolItem,
+    SymbolListResponse,
+)
 
 __all__ = [
     "UserBase",
@@ -28,4 +37,11 @@ __all__ = [
     "FileMetadata",
     "RepositoryScanResponse",
     "FileListResponse",
+    "ExtractedSymbol",
+    "ExtractedImport",
+    "ExtractedRoute",
+    "FileAnalysisResult",
+    "PythonAnalysisResponse",
+    "SymbolItem",
+    "SymbolListResponse",
 ]

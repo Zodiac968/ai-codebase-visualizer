@@ -2,8 +2,8 @@
 
 ## AI-Powered Interactive Codebase Understanding and Visualization Platform
 
-**Last Updated:** 2026-09-10  
-**Current Status:** Phase 4 (Repository Scanner) Completed  
+**Last Updated:** 2026-09-11  
+**Current Status:** Phase 5 (Tree-sitter Python Analyzer) Completed  
 
 ---
 
@@ -16,7 +16,7 @@
 | **Phase 2** | Authentication (JWT) | **COMPLETED** | Day 3 | Registration, login, /me, bcrypt, JWT dependency, React AuthContext |
 | **Phase 3** | GitHub Repository Ingestion & SSE | **COMPLETED** | Day 5 | Safe Git clone worker, 50MB safeguard, SSE progress stream, Repo list UI |
 | **Phase 4** | Repository Scanner & File Filter | **COMPLETED** | Day 6 | Recursive walker, language detection (Py/JS/TS), binary checks, LOC counts, files table |
-| **Phase 5** | Tree-sitter Python Analyzer | **NOT STARTED** | Day 9 | Python AST parsing, symbols, calls, routes |
+| **Phase 5** | Tree-sitter Python Analyzer | **COMPLETED** | Day 9 | Tree-sitter Python AST parsing, classes, methods, imports, routes, symbols table |
 | **Phase 6** | JavaScript / TypeScript Analyzer | **NOT STARTED** | Day 12 | JS/TS AST parsing, Express routes, symbols |
 | **Phase 7** | Neo4j Knowledge Graph Persistence | **NOT STARTED** | Day 14 | Cypher schema, batch insertion, graph queries |
 | **Phase 8** | Architecture Graph API | **NOT STARTED** | Day 15 | Hierarchical graph endpoints |
@@ -94,3 +94,17 @@
 - [x] Implement REST endpoints `POST /api/v1/repositories/{id}/scan` and `GET /api/v1/repositories/{id}/files`.
 - [x] Implement frontend file explorer with scan triggers, language breakdown tags, file search filter, and LOC display.
 - [x] Verify end-to-end scanner execution, unauthenticated rejection, user data isolation, and state guards across backend tests and React frontend.
+
+### Phase 5: Tree-sitter Python Analyzer
+- [x] Integrate Tree-sitter (`tree-sitter==0.26.0`, `tree-sitter-python==0.25.0`) for static Concrete Syntax Tree parsing.
+- [x] Implement SQLAlchemy models `SymbolRecord`, `DependencyRecord`, and `RouteRecord` in `backend/app/models/`.
+- [x] Create and execute Alembic migration `0004_create_symbols_tables`.
+- [x] Implement `PythonParser` in `backend/app/parser/python_parser.py` extracting classes, functions, methods, docstrings, signatures, and 1-based line numbers.
+- [x] Implement import extraction for `import x`, `import x as y`, `from x import y`, `from x import y as z`.
+- [x] Implement decorator extraction and heuristic route detection for FastAPI (`@app.get(...)`, `@router.post(...)`) and Flask (`@app.route(...)`).
+- [x] Implement error-tolerant parsing for files with syntax errors without crashing repository analysis.
+- [x] Implement clean rebuild replacement strategy preventing duplicate symbols/imports on re-analysis.
+- [x] Implement `POST /api/v1/repositories/{id}/analyze/python` and `GET /api/v1/repositories/{id}/symbols` API endpoints.
+- [x] Implement frontend "Analyze Python AST" trigger, AST summary metrics, and Extracted Symbols explorer with signature and line range badges.
+- [x] Implement repository workspace persistence (`./backend/data/repos:/app/data/repos`) and self-healing workspace resolver (`ensure_repository_workspace`) to prevent missing workspace errors across container rebuilds and host switches.
+- [x] Verify complete Python AST analysis, symbol hierarchy, route detection, user isolation, and re-analysis across unit and container tests.

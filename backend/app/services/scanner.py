@@ -10,6 +10,7 @@ from app.core.logging import logger
 from app.models.repository import Repository
 from app.models.file import FileRecord
 from app.schemas.scanner import FileMetadata, RepositoryScanResponse
+from app.services.clone import ensure_repository_workspace
 
 
 # Directories skipped during traversal
@@ -282,13 +283,8 @@ def scan_and_save_repository(repository_id: UUID, db: Session) -> RepositoryScan
     if repo.status != "READY":
         raise ValueError(f"Repository cannot be scanned while in '{repo.status}' state. Must be 'READY'.")
 
-    # Determine source directory
-    source_dir = repo.local_path
-    if not source_dir or not os.path.exists(source_dir):
-        # Fallback to standard storage path
-        source_dir = os.path.join(settings.REPOSITORY_STORAGE_PATH, str(repository_id), "source")
-        if not os.path.exists(source_dir):
-            raise FileNotFoundError(f"Source workspace not found at {source_dir}")
+    # Determine source directory (self-healing if workspace was deleted or moved)
+    source_dir = ensure_repository_workspace(repo, db)
 
     logger.info(f"Scanning repository {repository_id} ({repo.name}) at {source_dir}")
 

@@ -11,6 +11,7 @@ from app.models.user import User
 from app.models.repository import Repository
 from app.models.analysis_job import AnalysisJob
 from app.models.file import FileRecord
+from app.models.symbol import SymbolRecord
 from app.schemas.repository import (
     RepositoryImportRequest,
     RepositoryImportResponse,
@@ -22,6 +23,11 @@ from app.schemas.scanner import (
     RepositoryScanResponse,
     FileListResponse,
 )
+from app.schemas.parser import (
+    PythonAnalysisResponse,
+    SymbolItem,
+    SymbolListResponse,
+)
 from app.core.security import get_current_user, decode_access_token
 from app.core.config import settings
 from app.core.logging import logger
@@ -29,6 +35,7 @@ from app.services.github import validate_and_parse_github_url
 from app.services.clone import execute_clone_task, cleanup_directory
 from app.services.progress import subscribe_progress
 from app.services.scanner import scan_and_save_repository, classify_file
+from app.services.analyzer import analyze_python_repository
 
 router = APIRouter(prefix="/repositories", tags=["Repositories"])
 
@@ -336,7 +343,6 @@ def list_repository_files(
         .all()
     )
 
-    # Convert to FileMetadata list
     file_items = []
     for f in file_records:
         filename = os.path.basename(f.file_path)
@@ -363,6 +369,111 @@ def list_repository_files(
         repository_id=repository_id,
         total_files=len(file_items),
         files=file_items,
+    )
+
+
+@router.post(
+    "/{repository_id}/analyze/python",
+    response_model=PythonAnalysisResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Execute Tree-sitter static analysis on Python files",
+)
+def analyze_python(
+    repository_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Statically analyzes all Python files using Tree-sitter.
+    Extracts classes, functions, methods, dependencies, and API routes and persists them in PostgreSQL.
+    """
+    repo = (
+        db.query(Repository)
+        .filter(Repository.id == repository_id, Repository.user_id == current_user.id)
+        .first()
+    )
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repository not found",
+        )
+
+    if repo.status != "READY":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Repository cannot be analyzed while in '{repo.status}' state. It must be 'READY'.",
+        )
+
+    try:
+        analysis_result = analyze_python_repository(repository_id, db)
+        return analysis_result
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(exc),
+        )
+    except Exception as exc:
+        logger.error(f"Error during Python analysis for {repository_id}: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Python analysis failed: {str(exc)}",
+        )
+
+
+@router.get(
+    "/{repository_id}/symbols",
+    response_model=SymbolListResponse,
+    status_code=status.HTTP_200_OK,
+    summary="List all extracted AST symbols for a repository",
+)
+def list_repository_symbols(
+    repository_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns all AST symbols (classes, functions, methods) extracted for the repository.
+    """
+    repo = (
+        db.query(Repository)
+        .filter(Repository.id == repository_id, Repository.user_id == current_user.id)
+        .first()
+    )
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Repository not found",
+        )
+
+    symbols = (
+        db.query(SymbolRecord, FileRecord.file_path)
+        .join(FileRecord, FileRecord.id == SymbolRecord.file_id)
+        .filter(FileRecord.repository_id == repository_id)
+        .order_by(FileRecord.file_path, SymbolRecord.start_line)
+        .all()
+    )
+
+    items = [
+        SymbolItem(
+            id=sym.id,
+            file_id=sym.file_id,
+            file_path=file_path,
+            name=sym.name,
+            symbol_type=sym.symbol_type,
+            qualified_name=sym.qualified_name,
+            parent_id=sym.parent_id,
+            start_line=sym.start_line,
+            end_line=sym.end_line,
+            signature=sym.signature,
+            docstring=sym.docstring,
+        )
+        for sym, file_path in symbols
+    ]
+
+    return SymbolListResponse(
+        repository_id=repository_id,
+        total_symbols=len(items),
+        symbols=items,
     )
 
 

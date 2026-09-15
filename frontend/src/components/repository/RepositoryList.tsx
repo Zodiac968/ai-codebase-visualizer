@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Repository } from '../../types/repository';
 import { FileMetadata, RepositoryScanResponse } from '../../types/scanner';
+import { PythonAnalysisResponse, SymbolItem } from '../../types/parser';
 import { useAuth } from '../../context/AuthContext';
-import { deleteRepository, scanRepository, fetchRepositoryFiles } from '../../services/api';
+import {
+  deleteRepository,
+  scanRepository,
+  fetchRepositoryFiles,
+  analyzePythonRepository,
+  fetchRepositorySymbols,
+} from '../../services/api';
 import {
   FolderGit2,
   ExternalLink,
@@ -20,6 +27,7 @@ import {
   Binary,
   Code2,
   Sparkles,
+  Cpu,
 } from 'lucide-react';
 
 interface Props {
@@ -32,11 +40,20 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
   const { token } = useAuth();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [scanningId, setScanningId] = useState<string | null>(null);
+  const [analyzingPyId, setAnalyzingPyId] = useState<string | null>(null);
+
   const [expandedRepoId, setExpandedRepoId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<Record<string, 'files' | 'symbols'>>({});
+
   const [scanResults, setScanResults] = useState<Record<string, RepositoryScanResponse>>({});
+  const [pythonAnalysisResults, setPythonAnalysisResults] = useState<Record<string, PythonAnalysisResponse>>({});
   const [repoFiles, setRepoFiles] = useState<Record<string, FileMetadata[]>>({});
+  const [repoSymbols, setRepoSymbols] = useState<Record<string, SymbolItem[]>>({});
+
   const [fileFilter, setFileFilter] = useState<string>('');
+  const [symbolFilter, setSymbolFilter] = useState<string>('');
   const [loadingFilesId, setLoadingFilesId] = useState<string | null>(null);
+  const [loadingSymbolsId, setLoadingSymbolsId] = useState<string | null>(null);
 
   const handleDelete = async (id: string, name: string) => {
     if (!token) return;
@@ -63,7 +80,7 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
       if (data) {
         setScanResults((prev) => ({ ...prev, [repoId]: data }));
         setExpandedRepoId(repoId);
-        // Also load scanned files
+        setActiveTab((prev) => ({ ...prev, [repoId]: 'files' }));
         await loadFiles(repoId);
         onRefresh();
       } else if (error) {
@@ -71,6 +88,25 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
       }
     } finally {
       setScanningId(null);
+    }
+  };
+
+  const handleAnalyzePython = async (repoId: string) => {
+    if (!token) return;
+    setAnalyzingPyId(repoId);
+    try {
+      const { data, error } = await analyzePythonRepository(repoId, token);
+      if (data) {
+        setPythonAnalysisResults((prev) => ({ ...prev, [repoId]: data }));
+        setExpandedRepoId(repoId);
+        setActiveTab((prev) => ({ ...prev, [repoId]: 'symbols' }));
+        await loadSymbols(repoId);
+        onRefresh();
+      } else if (error) {
+        alert(error);
+      }
+    } finally {
+      setAnalyzingPyId(null);
     }
   };
 
@@ -87,13 +123,29 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
     }
   };
 
+  const loadSymbols = async (repoId: string) => {
+    if (!token) return;
+    setLoadingSymbolsId(repoId);
+    try {
+      const { data } = await fetchRepositorySymbols(repoId, token);
+      if (data) {
+        setRepoSymbols((prev) => ({ ...prev, [repoId]: data.symbols }));
+      }
+    } finally {
+      setLoadingSymbolsId(null);
+    }
+  };
+
   const toggleExpand = async (repoId: string) => {
     if (expandedRepoId === repoId) {
       setExpandedRepoId(null);
     } else {
       setExpandedRepoId(repoId);
-      if (!repoFiles[repoId]) {
+      const currentTab = activeTab[repoId] || 'files';
+      if (currentTab === 'files' && !repoFiles[repoId]) {
         await loadFiles(repoId);
+      } else if (currentTab === 'symbols' && !repoSymbols[repoId]) {
+        await loadSymbols(repoId);
       }
     }
   };
@@ -145,6 +197,18 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
     }
   };
 
+  const getSymbolBadge = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'class':
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-950 text-purple-400 border border-purple-800/60">class</span>;
+      case 'method':
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-950 text-blue-400 border border-blue-800/60">method</span>;
+      case 'function':
+      default:
+        return <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-400 border border-emerald-800/60">function</span>;
+    }
+  };
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl space-y-4">
       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -178,11 +242,21 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
         <div className="space-y-4">
           {repositories.map((repo) => {
             const isExpanded = expandedRepoId === repo.id;
+            const tab = activeTab[repo.id] || 'files';
             const scan = scanResults[repo.id];
+            const pyAnalysis = pythonAnalysisResults[repo.id];
             const files = repoFiles[repo.id] || [];
+            const symbols = repoSymbols[repo.id] || [];
+
             const filteredFiles = files.filter((f) =>
               f.relative_path.toLowerCase().includes(fileFilter.toLowerCase()) ||
               f.language.toLowerCase().includes(fileFilter.toLowerCase())
+            );
+
+            const filteredSymbols = symbols.filter((s) =>
+              s.name.toLowerCase().includes(symbolFilter.toLowerCase()) ||
+              s.qualified_name.toLowerCase().includes(symbolFilter.toLowerCase()) ||
+              s.file_path.toLowerCase().includes(symbolFilter.toLowerCase())
             );
 
             return (
@@ -225,6 +299,13 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
                         </span>
                       )}
 
+                      {repo.total_symbols > 0 && (
+                        <span className="flex items-center gap-1 text-purple-400 font-mono shrink-0">
+                          <Cpu className="w-3 h-3 text-purple-400" />
+                          {repo.total_symbols} symbols
+                        </span>
+                      )}
+
                       <span className="text-slate-600 text-[11px] shrink-0">
                         {new Date(repo.created_at).toLocaleDateString()}
                       </span>
@@ -232,25 +313,34 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap">
                     {repo.status === 'READY' && (
                       <>
                         <button
                           onClick={() => handleScan(repo.id)}
                           disabled={scanningId === repo.id}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5 disabled:opacity-50"
+                          className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium border border-slate-700 transition flex items-center gap-1.5 disabled:opacity-50"
                         >
-                          <Sparkles className={`w-3.5 h-3.5 ${scanningId === repo.id ? 'animate-spin' : ''}`} />
-                          {scanningId === repo.id ? 'Scanning...' : 'Scan Codebase'}
+                          <Sparkles className={`w-3.5 h-3.5 text-blue-400 ${scanningId === repo.id ? 'animate-spin' : ''}`} />
+                          {scanningId === repo.id ? 'Scanning...' : 'Scan Files'}
+                        </button>
+
+                        <button
+                          onClick={() => handleAnalyzePython(repo.id)}
+                          disabled={analyzingPyId === repo.id}
+                          className="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          <Cpu className={`w-3.5 h-3.5 ${analyzingPyId === repo.id ? 'animate-spin' : ''}`} />
+                          {analyzingPyId === repo.id ? 'Analyzing...' : 'Analyze Python AST'}
                         </button>
 
                         <button
                           onClick={() => toggleExpand(repo.id)}
                           className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium border border-slate-700 transition flex items-center gap-1"
-                          title="Toggle file list"
+                          title="Toggle explorer view"
                         >
                           {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                          Files
+                          Inspect
                         </button>
                       </>
                     )}
@@ -266,10 +356,10 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
                   </div>
                 </div>
 
-                {/* Expandable Scan Metrics & File List */}
+                {/* Expandable Explorer View */}
                 {isExpanded && (
                   <div className="border-t border-slate-800/80 p-4 bg-slate-950/90 space-y-4 text-xs">
-                    {/* Scan Summary Banner if present */}
+                    {/* Scanner Metrics Cards */}
                     {scan && (
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300">
                         <div className="p-2.5 bg-slate-900 border border-slate-800 rounded-lg">
@@ -314,80 +404,216 @@ export const RepositoryList: React.FC<Props> = ({ repositories, loading, onRefre
                       </div>
                     )}
 
-                    {/* Language Breakdown Badges */}
-                    {scan && Object.keys(scan.languages).length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-slate-500 text-[11px] mr-1">Languages:</span>
-                        {Object.entries(scan.languages).map(([lang, count]) => (
-                          <span
-                            key={lang}
-                            className={`px-2 py-0.5 rounded text-[11px] font-mono border ${getLanguageColor(lang)}`}
-                          >
-                            {lang}: {count}
+                    {/* Python AST Metrics Banner */}
+                    {pyAnalysis && (
+                      <div className="p-3 bg-purple-950/30 border border-purple-800/50 rounded-lg space-y-2">
+                        <div className="flex items-center justify-between text-purple-300 font-semibold text-xs">
+                          <span className="flex items-center gap-1.5">
+                            <Cpu className="w-4 h-4 text-purple-400" />
+                            Tree-sitter Python AST Summary
                           </span>
-                        ))}
+                          <span className="font-mono text-[11px] text-purple-400">
+                            {pyAnalysis.files_analyzed} files analyzed
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs">
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">Classes</div>
+                            <div className="text-sm font-bold text-purple-300 font-mono">{pyAnalysis.classes_found}</div>
+                          </div>
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">Functions</div>
+                            <div className="text-sm font-bold text-emerald-300 font-mono">{pyAnalysis.functions_found}</div>
+                          </div>
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">Methods</div>
+                            <div className="text-sm font-bold text-blue-300 font-mono">{pyAnalysis.methods_found}</div>
+                          </div>
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">Imports</div>
+                            <div className="text-sm font-bold text-amber-300 font-mono">{pyAnalysis.imports_found}</div>
+                          </div>
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">API Routes</div>
+                            <div className="text-sm font-bold text-rose-300 font-mono">{pyAnalysis.routes_found}</div>
+                          </div>
+                          <div className="p-2 bg-slate-900/90 rounded border border-purple-900/40">
+                            <div className="text-[10px] text-slate-400">Parse Errors</div>
+                            <div className="text-sm font-bold text-slate-400 font-mono">{pyAnalysis.files_with_parse_errors}</div>
+                          </div>
+                        </div>
                       </div>
                     )}
 
-                    {/* Search & Filter Bar */}
-                    <div className="flex items-center justify-between gap-3 pt-1">
-                      <div className="relative flex-1">
-                        <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
-                        <input
-                          type="text"
-                          value={fileFilter}
-                          onChange={(e) => setFileFilter(e.target.value)}
-                          placeholder="Filter files by path or language (e.g. .py, app/main)..."
-                          className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
-                        />
+                    {/* Tab Navigation */}
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setActiveTab((prev) => ({ ...prev, [repo.id]: 'files' }));
+                            if (!repoFiles[repo.id]) loadFiles(repo.id);
+                          }}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                            tab === 'files'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          <FileCode2 className="w-3.5 h-3.5" />
+                          Scanned Files ({files.length})
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setActiveTab((prev) => ({ ...prev, [repo.id]: 'symbols' }));
+                            if (!repoSymbols[repo.id]) loadSymbols(repo.id);
+                          }}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                            tab === 'symbols'
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-slate-900 text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          <Cpu className="w-3.5 h-3.5" />
+                          Extracted AST Symbols ({symbols.length})
+                        </button>
                       </div>
-                      <span className="text-slate-500 font-mono text-[11px] shrink-0">
-                        {filteredFiles.length} / {files.length} files
-                      </span>
                     </div>
 
-                    {/* Files Table / List */}
-                    {loadingFilesId === repo.id ? (
-                      <div className="py-6 text-center text-slate-500">Loading files...</div>
-                    ) : files.length === 0 ? (
-                      <div className="py-6 text-center text-slate-500">
-                        No files scanned yet. Click "Scan Codebase" above to inspect repository files.
-                      </div>
-                    ) : (
-                      <div className="max-h-60 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
-                        {filteredFiles.map((file, idx) => (
-                          <div
-                            key={idx}
-                            className="p-2 bg-slate-900/80 border border-slate-800/60 rounded flex items-center justify-between gap-3 hover:bg-slate-900 transition"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <FileCode2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                              <span className="text-slate-200 truncate" title={file.relative_path}>
-                                {file.relative_path}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-3 shrink-0">
-                              <span
-                                className={`px-1.5 py-0.5 rounded text-[10px] border ${getLanguageColor(
-                                  file.language
-                                )}`}
-                              >
-                                {file.language}
-                              </span>
-
-                              {file.line_count > 0 && (
-                                <span className="text-slate-400 text-[10px]">
-                                  {file.line_count} lines
-                                </span>
-                              )}
-
-                              <span className="text-slate-500 text-[10px]">
-                                {(file.size_bytes / 1024).toFixed(1)} KB
-                              </span>
-                            </div>
+                    {/* TAB 1: FILES LIST */}
+                    {tab === 'files' && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="relative flex-1">
+                            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+                            <input
+                              type="text"
+                              value={fileFilter}
+                              onChange={(e) => setFileFilter(e.target.value)}
+                              placeholder="Filter files by path or language..."
+                              className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
+                            />
                           </div>
-                        ))}
+                          <span className="text-slate-500 font-mono text-[11px] shrink-0">
+                            {filteredFiles.length} / {files.length} files
+                          </span>
+                        </div>
+
+                        {loadingFilesId === repo.id ? (
+                          <div className="py-6 text-center text-slate-500">Loading files...</div>
+                        ) : files.length === 0 ? (
+                          <div className="py-6 text-center text-slate-500">
+                            No files scanned yet. Click "Scan Files" above to inspect repository files.
+                          </div>
+                        ) : (
+                          <div className="max-h-60 overflow-y-auto space-y-1 pr-1 font-mono text-[11px]">
+                            {filteredFiles.map((file, idx) => (
+                              <div
+                                key={idx}
+                                className="p-2 bg-slate-900/80 border border-slate-800/60 rounded flex items-center justify-between gap-3 hover:bg-slate-900 transition"
+                              >
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FileCode2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                                  <span className="text-slate-200 truncate" title={file.relative_path}>
+                                    {file.relative_path}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-3 shrink-0">
+                                  <span
+                                    className={`px-1.5 py-0.5 rounded text-[10px] border ${getLanguageColor(
+                                      file.language
+                                    )}`}
+                                  >
+                                    {file.language}
+                                  </span>
+
+                                  {file.line_count > 0 && (
+                                    <span className="text-slate-400 text-[10px]">
+                                      {file.line_count} lines
+                                    </span>
+                                  )}
+
+                                  <span className="text-slate-500 text-[10px]">
+                                    {(file.size_bytes / 1024).toFixed(1)} KB
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* TAB 2: AST SYMBOLS LIST */}
+                    {tab === 'symbols' && (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="relative flex-1">
+                            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+                            <input
+                              type="text"
+                              value={symbolFilter}
+                              onChange={(e) => setSymbolFilter(e.target.value)}
+                              placeholder="Filter symbols by name, signature, or file..."
+                              className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-purple-500 font-mono"
+                            />
+                          </div>
+                          <span className="text-slate-500 font-mono text-[11px] shrink-0">
+                            {filteredSymbols.length} / {symbols.length} symbols
+                          </span>
+                        </div>
+
+                        {loadingSymbolsId === repo.id ? (
+                          <div className="py-6 text-center text-slate-500">Loading symbols...</div>
+                        ) : symbols.length === 0 ? (
+                          <div className="py-6 text-center text-slate-500">
+                            No AST symbols extracted yet. Click "Analyze Python AST" above to extract classes, methods, and functions.
+                          </div>
+                        ) : (
+                          <div className="max-h-72 overflow-y-auto space-y-1.5 pr-1 font-mono text-[11px]">
+                            {filteredSymbols.map((sym) => (
+                              <div
+                                key={sym.id}
+                                className="p-2.5 bg-slate-900/80 border border-slate-800/70 rounded hover:border-slate-700 transition space-y-1"
+                              >
+                                <div className="flex items-center justify-between gap-2 flex-wrap">
+                                  <div className="flex items-center gap-2">
+                                    {getSymbolBadge(sym.symbol_type)}
+                                    <span className="font-bold text-slate-100">
+                                      {sym.name}
+                                    </span>
+                                    {sym.parent_id && (
+                                      <span className="text-slate-500 text-[10px]">
+                                        ({sym.qualified_name})
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="flex items-center gap-2 text-slate-500 text-[10px]">
+                                    <span className="text-slate-400 truncate max-w-xs">{sym.file_path}</span>
+                                    <span className="px-1.5 py-0.5 bg-slate-800 rounded text-slate-300">
+                                      L{sym.start_line}–L{sym.end_line}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {sym.signature && (
+                                  <div className="text-slate-400 text-[10px] truncate">
+                                    <code className="text-cyan-400">{sym.signature}</code>
+                                  </div>
+                                )}
+
+                                {sym.docstring && (
+                                  <p className="text-[10px] text-slate-400 italic line-clamp-1">
+                                    "{sym.docstring}"
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

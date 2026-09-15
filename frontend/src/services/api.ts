@@ -349,3 +349,67 @@ export async function fetchRepositoryFiles(
     };
   }
 }
+
+/**
+ * Execute Tree-sitter Python Analysis
+ */
+export async function analyzePythonRepository(
+  repositoryId: string,
+  token: string
+): Promise<{ data: import('../types/parser').PythonAnalysisResponse | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/${repositoryId}/analyze/python`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Python analysis failed (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error executing Python analysis',
+    };
+  }
+}
+
+/**
+ * Fetch Extracted AST Symbols
+ */
+export async function fetchRepositorySymbols(
+  repositoryId: string,
+  token: string
+): Promise<{ data: import('../types/parser').SymbolListResponse | null; error: string | null }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/repositories/${repositoryId}/symbols`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const errorMsg = data?.detail || `Failed to fetch symbols (HTTP ${response.status})`;
+      return { data: null, error: errorMsg };
+    }
+
+    return { data, error: null };
+  } catch (err: any) {
+    return {
+      data: null,
+      error: err?.message || 'Network error fetching symbols',
+    };
+  }
+}

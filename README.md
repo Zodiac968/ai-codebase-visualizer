@@ -152,4 +152,5 @@ docker compose down -v
   - **Phase 2**: Simple JWT Authentication & User Isolation
   - **Phase 3**: GitHub Repository Ingestion & SSE Progress Streaming
   - **Phase 4**: Repository Scanner & File Filter
-- **Next Phase**: **Phase 5 (Tree-sitter Python Analyzer)**
+  - **Phase 5**: Tree-sitter Python Analyzer
+- **Next Phase**: **Phase 6 (JavaScript / TypeScript Analyzer)**
