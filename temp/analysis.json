@@ -1,0 +1,29 @@
+[
+  {
+    "path": "App/App.py",
+    "name": "App.py",
+    "extension": ".py",
+    "language": "python",
+    "size": 44852,
+    "lineCount": 792,
+    "truncated": false
+  },
+  {
+    "path": "App/Courses.py",
+    "name": "Courses.py",
+    "extension": ".py",
+    "language": "python",
+    "size": 7271,
+    "lineCount": 70,
+    "truncated": false
+  },
+  {
+    "path": "pyresparser/resume_parser.py",
+    "name": "resume_parser.py",
+    "extension": ".py",
+    "language": "python",
+    "size": 3287,
+    "lineCount": 113,
+    "truncated": false
+  }
+]
