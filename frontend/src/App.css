@@ -48,7 +48,8 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .meta-pill {
@@ -58,6 +59,20 @@
   border-radius: 6px;
   color: #475569;
   font-family: var(--mono);
+}
+
+.pill-cached {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  font-weight: 600;
+}
+
+.pill-fresh {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  font-weight: 600;
 }
 
 .btn-secondary {
@@ -75,9 +90,14 @@
   transition: all 0.15s ease;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background: #f8fafc;
   border-color: #94a3b8;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Main Content Area */
@@ -135,16 +155,18 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow-y: auto;
 }
 
 .input-card {
   width: 100%;
-  max-width: 620px;
+  max-width: 660px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 36px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  margin: auto;
 }
 
 .input-card h1 {
@@ -266,6 +288,71 @@
   line-height: 1.4;
 }
 
+/* Recent Repositories Section */
+.recent-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.recent-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.recent-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.recent-item:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.recent-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.recent-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #64748b;
+  font-family: var(--mono);
+}
+
+.recent-badge {
+  background: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #334155;
+}
+
 /* Legend Overlay */
 .graph-legend {
   position: absolute;
@@ -313,7 +400,7 @@
 }
 
 .quick-examples {
-  margin-top: 20px;
+  margin-top: 16px;
   font-size: 12px;
   color: #64748b;
 }

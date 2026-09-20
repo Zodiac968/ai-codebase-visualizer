@@ -1,6 +1,7 @@
 import express, { json } from 'express';
 import cors from 'cors';
 import repoRoutes from './routes/repoRoutes.js';
+import { initDb } from './config/db.js';
 
 const app = express();
 const PORT = 3000;
@@ -16,7 +17,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/repositories', repoRoutes); // Use the repoRoutes for /api/repositories
 
-// Start the server
-app.listen(PORT, () => {
+// Start the server and initialize database tables
+app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  await initDb();
 });

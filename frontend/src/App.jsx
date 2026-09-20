@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CodebaseGraph from "./components/graph/CodebaseGraph";
 import CodeViewer from "./components/code/CodeViewer";
 import { NODE_TYPE_COLORS } from "./utils/graph/constants";
@@ -10,6 +10,7 @@ export default function App() {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [error, setError] = useState(null);
   const [repoData, setRepoData] = useState(null);
+  const [recentRepos, setRecentRepos] = useState([]);
 
   // Code Viewer State
   const [selectedTarget, setSelectedTarget] = useState(null);
@@ -18,15 +19,49 @@ export default function App() {
   const [fileError, setFileError] = useState(null);
   const [fileCache, setFileCache] = useState({});
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!repoUrl.trim()) return;
+  // Fetch recent repositories from PostgreSQL
+  const fetchRecentRepos = async () => {
+    try {
+      const response = await fetch("/api/repositories/recent");
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setRecentRepos(result.data || []);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not load recent repositories:", err);
+    }
+  };
+
+  useEffect(() => {
+    let ignore = false;
+    fetch("/api/repositories/recent")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!ignore && json?.success) {
+          setRecentRepos(json.data || []);
+        }
+      })
+      .catch((err) => console.warn("Could not load recent repositories:", err));
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const analyzeRepositoryUrl = async (targetUrl, forceRefresh = false) => {
+    if (!targetUrl || !targetUrl.trim()) return;
 
     setLoading(true);
     setError(null);
     setSelectedTarget(null);
     setFileCache({});
-    setLoadingMessage("Cloning repository and executing AST analysis pipeline...");
+    setLoadingMessage(
+      forceRefresh
+        ? "Re-cloning and re-analyzing fresh from GitHub..."
+        : "Checking PostgreSQL cache or analyzing repository..."
+    );
 
     try {
       const response = await fetch("/api/repositories/analyze", {
@@ -34,7 +69,10 @@ export default function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ repoUrl: repoUrl.trim() }),
+        body: JSON.stringify({
+          repoUrl: targetUrl.trim(),
+          forceRefresh: Boolean(forceRefresh),
+        }),
       });
 
       const rawText = await response.text();
@@ -44,7 +82,7 @@ export default function App() {
       } catch {
         throw new Error(
           response.status === 502
-            ? "502 Bad Gateway: Backend server dropped the connection or restarted during analysis. (Tip: Restart backend if nodemon had restarted)."
+            ? "502 Bad Gateway: Backend server dropped connection. Ensure backend is running."
             : `Server responded with status ${response.status}: ${rawText.slice(0, 150) || "Empty response"}`
         );
       }
@@ -54,11 +92,24 @@ export default function App() {
       }
 
       setRepoData(result.data);
+      setRepoUrl(result.data.url || targetUrl);
+      fetchRecentRepos();
     } catch (err) {
       console.error("Analysis request failed:", err);
       setError(err.message || "An unexpected error occurred while analyzing the repository.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    analyzeRepositoryUrl(repoUrl, false);
+  };
+
+  const handleReanalyze = () => {
+    if (repoData?.url) {
+      analyzeRepositoryUrl(repoData.url, true);
     }
   };
 
@@ -68,6 +119,7 @@ export default function App() {
     setSelectedTarget(null);
     setFileContent("");
     setFileCache({});
+    fetchRecentRepos();
   };
 
   const handleNodeSelect = async (target) => {
@@ -121,15 +173,20 @@ export default function App() {
       <header className="app-header">
         <div className="brand-section">
           <h1 className="brand-title">AI Codebase Visualizer</h1>
-          <span className="brand-badge">Tree-sitter AST</span>
+          <span className="brand-badge">PostgreSQL + Tree-sitter</span>
         </div>
 
         <div className="header-actions">
           {repoData ? (
             <>
               <span className="meta-pill">
-                <strong>URL:</strong> {repoData.url}
+                <strong>Repo:</strong> {repoData.fullName || repoData.url}
               </span>
+              {repoData.cached ? (
+                <span className="meta-pill pill-cached">⚡ Cached from DB</span>
+              ) : (
+                <span className="meta-pill pill-fresh">✓ Freshly Analyzed</span>
+              )}
               <span className="meta-pill">
                 <strong>Nodes:</strong> {nodeCount} | <strong>Edges:</strong> {edgeCount}
               </span>
@@ -144,8 +201,16 @@ export default function App() {
                   {repoData.validation.valid ? "✓ Valid Graph" : "⚠ Warnings"}
                 </span>
               )}
+              <button
+                className="btn-secondary"
+                onClick={handleReanalyze}
+                disabled={loading}
+                title="Force re-clone and re-parse repository"
+              >
+                ↻ Re-analyze
+              </button>
               <button className="btn-secondary" onClick={handleReset}>
-                ← Analyze Another Repo
+                ← Back to Home
               </button>
             </>
           ) : (
@@ -211,9 +276,9 @@ export default function App() {
             <div className="input-card">
               <h1>Visualize Any Codebase</h1>
               <p>
-                Enter a public GitHub repository URL. Our backend clones the repo,
-                runs Tree-sitter AST symbol extraction, resolves cross-file relationships,
-                and generates an interactive architectural graph.
+                Enter a public GitHub repository URL. Our backend normalizes the repository ID,
+                extracts AST symbols and relationships, and persists full graph models into PostgreSQL
+                for instant subsequent exploration.
               </p>
 
               <form className="url-form" onSubmit={handleSubmit}>
@@ -243,7 +308,7 @@ export default function App() {
                   <div>
                     <p className="loading-text">{loadingMessage}</p>
                     <p className="loading-subtext">
-                      Cloning repository, parsing AST, and calculating hierarchical layout...
+                      Accessing PostgreSQL cache, parsing AST, and calculating hierarchical layout...
                     </p>
                   </div>
                 </div>
@@ -255,23 +320,55 @@ export default function App() {
                 </div>
               )}
 
+              {/* Quick Examples */}
               <div className="quick-examples">
                 <span>Quick test examples:</span>
                 <button
                   type="button"
                   className="example-chip"
-                  onClick={() => setRepoUrl("https://github.com/octocat/Hello-World")}
+                  onClick={() => analyzeRepositoryUrl("https://github.com/octocat/Hello-World")}
                 >
                   octocat/Hello-World
                 </button>
                 <button
                   type="button"
                   className="example-chip"
-                  onClick={() => setRepoUrl("https://github.com/expressjs/express")}
+                  onClick={() => analyzeRepositoryUrl("https://github.com/expressjs/express")}
                 >
                   expressjs/express
                 </button>
               </div>
+
+              {/* Previously Analyzed Repositories (PostgreSQL) */}
+              {recentRepos.length > 0 && (
+                <div className="recent-section">
+                  <div className="recent-title">
+                    ⚡ Previously Analyzed Repositories (PostgreSQL Cache)
+                  </div>
+                  <div className="recent-grid">
+                    {recentRepos.map((repo) => (
+                      <div
+                        key={repo.id}
+                        className="recent-item"
+                        onClick={() => analyzeRepositoryUrl(repo.url, false)}
+                      >
+                        <span className="recent-name">{repo.full_name}</span>
+                        <div className="recent-meta">
+                          <span className="recent-badge">
+                            {repo.node_count || 0} nodes
+                          </span>
+                          <span className="recent-badge">
+                            {repo.edge_count || 0} edges
+                          </span>
+                          <span>
+                            {new Date(repo.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
