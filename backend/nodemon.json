@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "controllers",
+    "routes",
+    "services",
+    "utils",
+    "config",
+    "index.js"
+  ],
+  "ignore": [
+    "repositories/**",
+    "node_modules/**",
+    "*.json"
+  ],
+  "ext": "js,mjs,json"
+}
