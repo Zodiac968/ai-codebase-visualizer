@@ -1,0 +1,2339 @@
+{
+  "nodes": [
+    {
+      "id": "repository",
+      "type": "repository",
+      "name": "repository",
+      "parent_id": null
+    },
+    {
+      "id": "package.json",
+      "type": "file",
+      "name": "package.json",
+      "parent_id": "repository"
+    },
+    {
+      "id": "src",
+      "type": "folder",
+      "name": "src",
+      "parent_id": "repository"
+    },
+    {
+      "id": "src/index.js",
+      "type": "file",
+      "name": "index.js",
+      "parent_id": "src"
+    },
+    {
+      "id": "src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "parent_id": "src"
+    },
+    {
+      "id": "src/models",
+      "type": "folder",
+      "name": "models",
+      "parent_id": "src"
+    },
+    {
+      "id": "src/models/book.js",
+      "type": "file",
+      "name": "book.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/book.ts",
+      "type": "file",
+      "name": "book.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/EBook.js",
+      "type": "file",
+      "name": "EBook.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/EBook.ts",
+      "type": "file",
+      "name": "EBook.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/PrintedBook.js",
+      "type": "file",
+      "name": "PrintedBook.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/PrintedBook.ts",
+      "type": "file",
+      "name": "PrintedBook.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/Student.js",
+      "type": "file",
+      "name": "Student.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/Student.ts",
+      "type": "file",
+      "name": "Student.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/Teacher.js",
+      "type": "file",
+      "name": "Teacher.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/Teacher.ts",
+      "type": "file",
+      "name": "Teacher.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/User.js",
+      "type": "file",
+      "name": "User.js",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/models/User.ts",
+      "type": "file",
+      "name": "User.ts",
+      "parent_id": "src/models"
+    },
+    {
+      "id": "src/services",
+      "type": "folder",
+      "name": "services",
+      "parent_id": "src"
+    },
+    {
+      "id": "src/services/LibraryManager.js",
+      "type": "file",
+      "name": "LibraryManager.js",
+      "parent_id": "src/services"
+    },
+    {
+      "id": "src/services/LibraryManager.ts",
+      "type": "file",
+      "name": "LibraryManager.ts",
+      "parent_id": "src/services"
+    },
+    {
+      "id": "tsconfig.json",
+      "type": "file",
+      "name": "tsconfig.json",
+      "parent_id": "repository"
+    },
+    {
+      "id": "src/index.ts::import::PrintedBook::L2",
+      "type": "import",
+      "name": "PrintedBook",
+      "path": "src/index.ts",
+      "parent_id": "src/index.ts"
+    },
+    {
+      "id": "src/index.ts::import::EBook::L3",
+      "type": "import",
+      "name": "EBook",
+      "path": "src/index.ts",
+      "parent_id": "src/index.ts"
+    },
+    {
+      "id": "src/index.ts::import::Student::L4",
+      "type": "import",
+      "name": "Student",
+      "path": "src/index.ts",
+      "parent_id": "src/index.ts"
+    },
+    {
+      "id": "src/index.ts::import::Teacher::L5",
+      "type": "import",
+      "name": "Teacher",
+      "path": "src/index.ts",
+      "parent_id": "src/index.ts"
+    },
+    {
+      "id": "src/index.ts::import::LibraryManager::L6",
+      "type": "import",
+      "name": "LibraryManager",
+      "path": "src/index.ts",
+      "parent_id": "src/index.ts"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4",
+      "type": "class",
+      "name": "Book",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4->method::constructor::L5",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4->method::borrow::L11",
+      "type": "method",
+      "name": "borrow",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "type": "method",
+      "name": "returnBook",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "method",
+      "name": "getAvailability",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "method",
+      "name": "getId",
+      "path": "src/models/book.js",
+      "parent_id": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "src/models/EBook.js::class::EBook::L5",
+      "type": "class",
+      "name": "EBook",
+      "path": "src/models/EBook.js",
+      "parent_id": "src/models/EBook.js"
+    },
+    {
+      "id": "src/models/EBook.js::class::EBook::L5->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/EBook.js",
+      "parent_id": "src/models/EBook.js::class::EBook::L5"
+    },
+    {
+      "id": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "method",
+      "name": "getInfo",
+      "path": "src/models/EBook.js",
+      "parent_id": "src/models/EBook.js::class::EBook::L5"
+    },
+    {
+      "id": "src/models/EBook.ts::import::Book::L1",
+      "type": "import",
+      "name": "Book",
+      "path": "src/models/EBook.ts",
+      "parent_id": "src/models/EBook.ts"
+    },
+    {
+      "id": "src/models/EBook.ts::class::EBook::L3",
+      "type": "class",
+      "name": "EBook",
+      "path": "src/models/EBook.ts",
+      "parent_id": "src/models/EBook.ts"
+    },
+    {
+      "id": "src/models/EBook.ts::class::EBook::L3->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/EBook.ts",
+      "parent_id": "src/models/EBook.ts::class::EBook::L3"
+    },
+    {
+      "id": "src/models/EBook.ts::class::EBook::L3->method::getInfo::L11",
+      "type": "method",
+      "name": "getInfo",
+      "path": "src/models/EBook.ts",
+      "parent_id": "src/models/EBook.ts::class::EBook::L3"
+    },
+    {
+      "id": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "type": "class",
+      "name": "PrintedBook",
+      "path": "src/models/PrintedBook.js",
+      "parent_id": "src/models/PrintedBook.js"
+    },
+    {
+      "id": "src/models/PrintedBook.js::class::PrintedBook::L5->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/PrintedBook.js",
+      "parent_id": "src/models/PrintedBook.js::class::PrintedBook::L5"
+    },
+    {
+      "id": "src/models/PrintedBook.js::class::PrintedBook::L5->method::getInfo::L10",
+      "type": "method",
+      "name": "getInfo",
+      "path": "src/models/PrintedBook.js",
+      "parent_id": "src/models/PrintedBook.js::class::PrintedBook::L5"
+    },
+    {
+      "id": "src/models/PrintedBook.ts::import::Book::L1",
+      "type": "import",
+      "name": "Book",
+      "path": "src/models/PrintedBook.ts",
+      "parent_id": "src/models/PrintedBook.ts"
+    },
+    {
+      "id": "src/models/PrintedBook.ts::class::PrintedBook::L3",
+      "type": "class",
+      "name": "PrintedBook",
+      "path": "src/models/PrintedBook.ts",
+      "parent_id": "src/models/PrintedBook.ts"
+    },
+    {
+      "id": "src/models/PrintedBook.ts::class::PrintedBook::L3->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/PrintedBook.ts",
+      "parent_id": "src/models/PrintedBook.ts::class::PrintedBook::L3"
+    },
+    {
+      "id": "src/models/PrintedBook.ts::class::PrintedBook::L3->method::getInfo::L11",
+      "type": "method",
+      "name": "getInfo",
+      "path": "src/models/PrintedBook.ts",
+      "parent_id": "src/models/PrintedBook.ts::class::PrintedBook::L3"
+    },
+    {
+      "id": "src/models/Student.js::class::Student::L5",
+      "type": "class",
+      "name": "Student",
+      "path": "src/models/Student.js",
+      "parent_id": "src/models/Student.js"
+    },
+    {
+      "id": "src/models/Student.js::class::Student::L5->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/Student.js",
+      "parent_id": "src/models/Student.js::class::Student::L5"
+    },
+    {
+      "id": "src/models/Student.ts::import::User::L1",
+      "type": "import",
+      "name": "User",
+      "path": "src/models/Student.ts",
+      "parent_id": "src/models/Student.ts"
+    },
+    {
+      "id": "src/models/Student.ts::class::Student::L3",
+      "type": "class",
+      "name": "Student",
+      "path": "src/models/Student.ts",
+      "parent_id": "src/models/Student.ts"
+    },
+    {
+      "id": "src/models/Student.ts::class::Student::L3->method::constructor::L4",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/Student.ts",
+      "parent_id": "src/models/Student.ts::class::Student::L3"
+    },
+    {
+      "id": "src/models/Teacher.js::class::Teacher::L5",
+      "type": "class",
+      "name": "Teacher",
+      "path": "src/models/Teacher.js",
+      "parent_id": "src/models/Teacher.js"
+    },
+    {
+      "id": "src/models/Teacher.js::class::Teacher::L5->method::constructor::L6",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/Teacher.js",
+      "parent_id": "src/models/Teacher.js::class::Teacher::L5"
+    },
+    {
+      "id": "src/models/Teacher.ts::import::User::L1",
+      "type": "import",
+      "name": "User",
+      "path": "src/models/Teacher.ts",
+      "parent_id": "src/models/Teacher.ts"
+    },
+    {
+      "id": "src/models/Teacher.ts::class::Teacher::L3",
+      "type": "class",
+      "name": "Teacher",
+      "path": "src/models/Teacher.ts",
+      "parent_id": "src/models/Teacher.ts"
+    },
+    {
+      "id": "src/models/Teacher.ts::class::Teacher::L3->method::constructor::L4",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/Teacher.ts",
+      "parent_id": "src/models/Teacher.ts::class::Teacher::L3"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4",
+      "type": "class",
+      "name": "User",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::constructor::L5",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "type": "method",
+      "name": "borrowBook",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "type": "method",
+      "name": "returnBook",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "type": "method",
+      "name": "getBorrowedBooks",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "method",
+      "name": "getUserId",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "method",
+      "name": "getName",
+      "path": "src/models/User.js",
+      "parent_id": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "src/models/User.ts::import::Book::L1",
+      "type": "import",
+      "name": "Book",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3",
+      "type": "class",
+      "name": "User",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::constructor::L9",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "type": "method",
+      "name": "borrowBook",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "type": "method",
+      "name": "returnBook",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47",
+      "type": "method",
+      "name": "getBorrowedBooks",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::getUserId::L57",
+      "type": "method",
+      "name": "getUserId",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/models/User.ts::class::User::L3->method::getName::L61",
+      "type": "method",
+      "name": "getName",
+      "path": "src/models/User.ts",
+      "parent_id": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "type": "class",
+      "name": "LibraryManager",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::constructor::L5",
+      "type": "method",
+      "name": "constructor",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "type": "method",
+      "name": "addBook",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "type": "method",
+      "name": "addUser",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "type": "method",
+      "name": "findBookById",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "type": "method",
+      "name": "findUserById",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "type": "method",
+      "name": "borrowBook",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "type": "method",
+      "name": "returnBook",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "type": "method",
+      "name": "listAvailableBooks",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "type": "method",
+      "name": "listAllUsers",
+      "path": "src/services/LibraryManager.js",
+      "parent_id": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::import::Book::L1",
+      "type": "import",
+      "name": "Book",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::import::User::L2",
+      "type": "import",
+      "name": "User",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "type": "class",
+      "name": "LibraryManager",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8",
+      "type": "method",
+      "name": "addBook",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13",
+      "type": "method",
+      "name": "addUser",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "type": "method",
+      "name": "findBookById",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "type": "method",
+      "name": "findUserById",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "type": "method",
+      "name": "borrowBook",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "type": "method",
+      "name": "returnBook",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "type": "method",
+      "name": "listAvailableBooks",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "type": "method",
+      "name": "listAllUsers",
+      "path": "src/services/LibraryManager.ts",
+      "parent_id": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    }
+  ],
+  "edges": [
+    {
+      "id": "contains:repository:package.json",
+      "type": "CONTAINS",
+      "source": "repository",
+      "target": "package.json"
+    },
+    {
+      "id": "contains:repository:src",
+      "type": "CONTAINS",
+      "source": "repository",
+      "target": "src"
+    },
+    {
+      "id": "contains:src:src/index.js",
+      "type": "CONTAINS",
+      "source": "src",
+      "target": "src/index.js"
+    },
+    {
+      "id": "contains:src:src/index.ts",
+      "type": "CONTAINS",
+      "source": "src",
+      "target": "src/index.ts"
+    },
+    {
+      "id": "contains:src:src/models",
+      "type": "CONTAINS",
+      "source": "src",
+      "target": "src/models"
+    },
+    {
+      "id": "contains:src/models:src/models/book.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/book.js"
+    },
+    {
+      "id": "contains:src/models:src/models/book.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/book.ts"
+    },
+    {
+      "id": "contains:src/models:src/models/EBook.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/EBook.js"
+    },
+    {
+      "id": "contains:src/models:src/models/EBook.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/EBook.ts"
+    },
+    {
+      "id": "contains:src/models:src/models/PrintedBook.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/PrintedBook.js"
+    },
+    {
+      "id": "contains:src/models:src/models/PrintedBook.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/PrintedBook.ts"
+    },
+    {
+      "id": "contains:src/models:src/models/Student.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/Student.js"
+    },
+    {
+      "id": "contains:src/models:src/models/Student.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/Student.ts"
+    },
+    {
+      "id": "contains:src/models:src/models/Teacher.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/Teacher.js"
+    },
+    {
+      "id": "contains:src/models:src/models/Teacher.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/Teacher.ts"
+    },
+    {
+      "id": "contains:src/models:src/models/User.js",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/User.js"
+    },
+    {
+      "id": "contains:src/models:src/models/User.ts",
+      "type": "CONTAINS",
+      "source": "src/models",
+      "target": "src/models/User.ts"
+    },
+    {
+      "id": "contains:src:src/services",
+      "type": "CONTAINS",
+      "source": "src",
+      "target": "src/services"
+    },
+    {
+      "id": "contains:src/services:src/services/LibraryManager.js",
+      "type": "CONTAINS",
+      "source": "src/services",
+      "target": "src/services/LibraryManager.js"
+    },
+    {
+      "id": "contains:src/services:src/services/LibraryManager.ts",
+      "type": "CONTAINS",
+      "source": "src/services",
+      "target": "src/services/LibraryManager.ts"
+    },
+    {
+      "id": "contains:repository:tsconfig.json",
+      "type": "CONTAINS",
+      "source": "repository",
+      "target": "tsconfig.json"
+    },
+    {
+      "id": "contains:src/index.ts:src/index.ts::import::PrintedBook::L2",
+      "type": "CONTAINS",
+      "source": "src/index.ts",
+      "target": "src/index.ts::import::PrintedBook::L2"
+    },
+    {
+      "id": "contains:src/index.ts:src/index.ts::import::EBook::L3",
+      "type": "CONTAINS",
+      "source": "src/index.ts",
+      "target": "src/index.ts::import::EBook::L3"
+    },
+    {
+      "id": "contains:src/index.ts:src/index.ts::import::Student::L4",
+      "type": "CONTAINS",
+      "source": "src/index.ts",
+      "target": "src/index.ts::import::Student::L4"
+    },
+    {
+      "id": "contains:src/index.ts:src/index.ts::import::Teacher::L5",
+      "type": "CONTAINS",
+      "source": "src/index.ts",
+      "target": "src/index.ts::import::Teacher::L5"
+    },
+    {
+      "id": "contains:src/index.ts:src/index.ts::import::LibraryManager::L6",
+      "type": "CONTAINS",
+      "source": "src/index.ts",
+      "target": "src/index.ts::import::LibraryManager::L6"
+    },
+    {
+      "id": "contains:src/models/book.js:src/models/book.js::class::Book::L4",
+      "type": "CONTAINS",
+      "source": "src/models/book.js",
+      "target": "src/models/book.js::class::Book::L4"
+    },
+    {
+      "id": "contains:src/models/book.js::class::Book::L4:src/models/book.js::class::Book::L4->method::constructor::L5",
+      "type": "CONTAINS",
+      "source": "src/models/book.js::class::Book::L4",
+      "target": "src/models/book.js::class::Book::L4->method::constructor::L5"
+    },
+    {
+      "id": "contains:src/models/book.js::class::Book::L4:src/models/book.js::class::Book::L4->method::borrow::L11",
+      "type": "CONTAINS",
+      "source": "src/models/book.js::class::Book::L4",
+      "target": "src/models/book.js::class::Book::L4->method::borrow::L11"
+    },
+    {
+      "id": "contains:src/models/book.js::class::Book::L4:src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "type": "CONTAINS",
+      "source": "src/models/book.js::class::Book::L4",
+      "target": "src/models/book.js::class::Book::L4->method::returnBook::L19"
+    },
+    {
+      "id": "contains:src/models/book.js::class::Book::L4:src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "CONTAINS",
+      "source": "src/models/book.js::class::Book::L4",
+      "target": "src/models/book.js::class::Book::L4->method::getAvailability::L23"
+    },
+    {
+      "id": "contains:src/models/book.js::class::Book::L4:src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "CONTAINS",
+      "source": "src/models/book.js::class::Book::L4",
+      "target": "src/models/book.js::class::Book::L4->method::getId::L26"
+    },
+    {
+      "id": "contains:src/models/EBook.js:src/models/EBook.js::class::EBook::L5",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.js",
+      "target": "src/models/EBook.js::class::EBook::L5"
+    },
+    {
+      "id": "contains:src/models/EBook.js::class::EBook::L5:src/models/EBook.js::class::EBook::L5->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.js::class::EBook::L5",
+      "target": "src/models/EBook.js::class::EBook::L5->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/EBook.js::class::EBook::L5:src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.js::class::EBook::L5",
+      "target": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10"
+    },
+    {
+      "id": "contains:src/models/EBook.ts:src/models/EBook.ts::import::Book::L1",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.ts",
+      "target": "src/models/EBook.ts::import::Book::L1"
+    },
+    {
+      "id": "contains:src/models/EBook.ts:src/models/EBook.ts::class::EBook::L3",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.ts",
+      "target": "src/models/EBook.ts::class::EBook::L3"
+    },
+    {
+      "id": "contains:src/models/EBook.ts::class::EBook::L3:src/models/EBook.ts::class::EBook::L3->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.ts::class::EBook::L3",
+      "target": "src/models/EBook.ts::class::EBook::L3->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/EBook.ts::class::EBook::L3:src/models/EBook.ts::class::EBook::L3->method::getInfo::L11",
+      "type": "CONTAINS",
+      "source": "src/models/EBook.ts::class::EBook::L3",
+      "target": "src/models/EBook.ts::class::EBook::L3->method::getInfo::L11"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.js:src/models/PrintedBook.js::class::PrintedBook::L5",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.js",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.js::class::PrintedBook::L5:src/models/PrintedBook.js::class::PrintedBook::L5->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.js::class::PrintedBook::L5:src/models/PrintedBook.js::class::PrintedBook::L5->method::getInfo::L10",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5->method::getInfo::L10"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.ts:src/models/PrintedBook.ts::import::Book::L1",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.ts",
+      "target": "src/models/PrintedBook.ts::import::Book::L1"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.ts:src/models/PrintedBook.ts::class::PrintedBook::L3",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.ts",
+      "target": "src/models/PrintedBook.ts::class::PrintedBook::L3"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.ts::class::PrintedBook::L3:src/models/PrintedBook.ts::class::PrintedBook::L3->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.ts::class::PrintedBook::L3",
+      "target": "src/models/PrintedBook.ts::class::PrintedBook::L3->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/PrintedBook.ts::class::PrintedBook::L3:src/models/PrintedBook.ts::class::PrintedBook::L3->method::getInfo::L11",
+      "type": "CONTAINS",
+      "source": "src/models/PrintedBook.ts::class::PrintedBook::L3",
+      "target": "src/models/PrintedBook.ts::class::PrintedBook::L3->method::getInfo::L11"
+    },
+    {
+      "id": "contains:src/models/Student.js:src/models/Student.js::class::Student::L5",
+      "type": "CONTAINS",
+      "source": "src/models/Student.js",
+      "target": "src/models/Student.js::class::Student::L5"
+    },
+    {
+      "id": "contains:src/models/Student.js::class::Student::L5:src/models/Student.js::class::Student::L5->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/Student.js::class::Student::L5",
+      "target": "src/models/Student.js::class::Student::L5->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/Student.ts:src/models/Student.ts::import::User::L1",
+      "type": "CONTAINS",
+      "source": "src/models/Student.ts",
+      "target": "src/models/Student.ts::import::User::L1"
+    },
+    {
+      "id": "contains:src/models/Student.ts:src/models/Student.ts::class::Student::L3",
+      "type": "CONTAINS",
+      "source": "src/models/Student.ts",
+      "target": "src/models/Student.ts::class::Student::L3"
+    },
+    {
+      "id": "contains:src/models/Student.ts::class::Student::L3:src/models/Student.ts::class::Student::L3->method::constructor::L4",
+      "type": "CONTAINS",
+      "source": "src/models/Student.ts::class::Student::L3",
+      "target": "src/models/Student.ts::class::Student::L3->method::constructor::L4"
+    },
+    {
+      "id": "contains:src/models/Teacher.js:src/models/Teacher.js::class::Teacher::L5",
+      "type": "CONTAINS",
+      "source": "src/models/Teacher.js",
+      "target": "src/models/Teacher.js::class::Teacher::L5"
+    },
+    {
+      "id": "contains:src/models/Teacher.js::class::Teacher::L5:src/models/Teacher.js::class::Teacher::L5->method::constructor::L6",
+      "type": "CONTAINS",
+      "source": "src/models/Teacher.js::class::Teacher::L5",
+      "target": "src/models/Teacher.js::class::Teacher::L5->method::constructor::L6"
+    },
+    {
+      "id": "contains:src/models/Teacher.ts:src/models/Teacher.ts::import::User::L1",
+      "type": "CONTAINS",
+      "source": "src/models/Teacher.ts",
+      "target": "src/models/Teacher.ts::import::User::L1"
+    },
+    {
+      "id": "contains:src/models/Teacher.ts:src/models/Teacher.ts::class::Teacher::L3",
+      "type": "CONTAINS",
+      "source": "src/models/Teacher.ts",
+      "target": "src/models/Teacher.ts::class::Teacher::L3"
+    },
+    {
+      "id": "contains:src/models/Teacher.ts::class::Teacher::L3:src/models/Teacher.ts::class::Teacher::L3->method::constructor::L4",
+      "type": "CONTAINS",
+      "source": "src/models/Teacher.ts::class::Teacher::L3",
+      "target": "src/models/Teacher.ts::class::Teacher::L3->method::constructor::L4"
+    },
+    {
+      "id": "contains:src/models/User.js:src/models/User.js::class::User::L4",
+      "type": "CONTAINS",
+      "source": "src/models/User.js",
+      "target": "src/models/User.js::class::User::L4"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::constructor::L5",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::constructor::L5"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::borrowBook::L11"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::returnBook::L23",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::returnBook::L23"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::getUserId::L41"
+    },
+    {
+      "id": "contains:src/models/User.js::class::User::L4:src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "CONTAINS",
+      "source": "src/models/User.js::class::User::L4",
+      "target": "src/models/User.js::class::User::L4->method::getName::L44"
+    },
+    {
+      "id": "contains:src/models/User.ts:src/models/User.ts::import::Book::L1",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts",
+      "target": "src/models/User.ts::import::Book::L1"
+    },
+    {
+      "id": "contains:src/models/User.ts:src/models/User.ts::class::User::L3",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts",
+      "target": "src/models/User.ts::class::User::L3"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::constructor::L9",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::constructor::L9"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::borrowBook::L16"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::returnBook::L33"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::getUserId::L57",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::getUserId::L57"
+    },
+    {
+      "id": "contains:src/models/User.ts::class::User::L3:src/models/User.ts::class::User::L3->method::getName::L61",
+      "type": "CONTAINS",
+      "source": "src/models/User.ts::class::User::L3",
+      "target": "src/models/User.ts::class::User::L3->method::getName::L61"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js:src/services/LibraryManager.js::class::LibraryManager::L4",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::constructor::L5",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::constructor::L5"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.js::class::LibraryManager::L4:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts:src/services/LibraryManager.ts::import::Book::L1",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts",
+      "target": "src/services/LibraryManager.ts::import::Book::L1"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts:src/services/LibraryManager.ts::import::User::L2",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts",
+      "target": "src/services/LibraryManager.ts::import::User::L2"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts:src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48"
+    },
+    {
+      "id": "contains:src/services/LibraryManager.ts::class::LibraryManager::L4:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "type": "CONTAINS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55"
+    },
+    {
+      "id": "calls:src/index.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/index.js:unresolved:require",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "require"
+    },
+    {
+      "id": "calls:src/index.js:src/services/LibraryManager.js::class::LibraryManager::L4",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/PrintedBook.js::class::PrintedBook::L5",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/EBook.js::class::EBook::L5",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/EBook.js::class::EBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/Student.js::class::Student::L5",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/Student.js::class::Student::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/Teacher.js::class::Teacher::L5",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/Teacher.js::class::Teacher::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.js:src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "type": "CALLS",
+      "source": "src/index.js",
+      "target": "src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/index.ts::import::PrintedBook::L2:src/models/PrintedBook.js::class::PrintedBook::L5",
+      "type": "IMPORTS",
+      "source": "src/index.ts::import::PrintedBook::L2",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/index.ts::import::EBook::L3:src/models/EBook.js::class::EBook::L5",
+      "type": "IMPORTS",
+      "source": "src/index.ts::import::EBook::L3",
+      "target": "src/models/EBook.js::class::EBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/index.ts::import::Student::L4:src/models/Student.js::class::Student::L5",
+      "type": "IMPORTS",
+      "source": "src/index.ts::import::Student::L4",
+      "target": "src/models/Student.js::class::Student::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/index.ts::import::Teacher::L5:src/models/Teacher.js::class::Teacher::L5",
+      "type": "IMPORTS",
+      "source": "src/index.ts::import::Teacher::L5",
+      "target": "src/models/Teacher.js::class::Teacher::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/index.ts::import::LibraryManager::L6:src/services/LibraryManager.js::class::LibraryManager::L4",
+      "type": "IMPORTS",
+      "source": "src/index.ts::import::LibraryManager::L6",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/services/LibraryManager.js::class::LibraryManager::L4",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/PrintedBook.js::class::PrintedBook::L5",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/PrintedBook.js::class::PrintedBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/EBook.js::class::EBook::L5",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/EBook.js::class::EBook::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/Student.js::class::Student::L5",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/Student.js::class::Student::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/Teacher.js::class::Teacher::L5",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/Teacher.js::class::Teacher::L5",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/index.ts:src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "type": "CALLS",
+      "source": "src/index.ts",
+      "target": "src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/book.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/book.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/book.js::class::Book::L4->method::borrow::L11:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/book.js::class::Book::L4->method::borrow::L11",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/book.js::class::Book::L4->method::returnBook::L19:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/book.js::class::Book::L4->method::returnBook::L19",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/book.ts:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/book.ts",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/EBook.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/EBook.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/EBook.js:unresolved:require",
+      "type": "CALLS",
+      "source": "src/models/EBook.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "require"
+    },
+    {
+      "id": "calls:src/models/EBook.js::class::EBook::L5->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/EBook.js::class::EBook::L5->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "imports:src/models/EBook.ts::import::Book::L1:src/models/book.js::class::Book::L4",
+      "type": "IMPORTS",
+      "source": "src/models/EBook.ts::import::Book::L1",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "inherits:src/models/EBook.ts::class::EBook::L3:src/models/book.js::class::Book::L4",
+      "type": "INHERITS",
+      "source": "src/models/EBook.ts::class::EBook::L3",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/EBook.ts::class::EBook::L3->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/EBook.ts::class::EBook::L3->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "calls:src/models/PrintedBook.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/PrintedBook.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/PrintedBook.js:unresolved:require",
+      "type": "CALLS",
+      "source": "src/models/PrintedBook.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "require"
+    },
+    {
+      "id": "calls:src/models/PrintedBook.js::class::PrintedBook::L5->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/PrintedBook.js::class::PrintedBook::L5->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "imports:src/models/PrintedBook.ts::import::Book::L1:src/models/book.js::class::Book::L4",
+      "type": "IMPORTS",
+      "source": "src/models/PrintedBook.ts::import::Book::L1",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "inherits:src/models/PrintedBook.ts::class::PrintedBook::L3:src/models/book.js::class::Book::L4",
+      "type": "INHERITS",
+      "source": "src/models/PrintedBook.ts::class::PrintedBook::L3",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/PrintedBook.ts::class::PrintedBook::L3->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/PrintedBook.ts::class::PrintedBook::L3->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "calls:src/models/Student.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/Student.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/Student.js:unresolved:require",
+      "type": "CALLS",
+      "source": "src/models/Student.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "require"
+    },
+    {
+      "id": "calls:src/models/Student.js::class::Student::L5->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/Student.js::class::Student::L5->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "imports:src/models/Student.ts::import::User::L1:src/models/User.js::class::User::L4",
+      "type": "IMPORTS",
+      "source": "src/models/Student.ts::import::User::L1",
+      "target": "src/models/User.js::class::User::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "inherits:src/models/Student.ts::class::Student::L3:src/models/User.js::class::User::L4",
+      "type": "INHERITS",
+      "source": "src/models/Student.ts::class::Student::L3",
+      "target": "src/models/User.js::class::User::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/Student.ts::class::Student::L3->method::constructor::L4:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/Student.ts::class::Student::L3->method::constructor::L4",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "calls:src/models/Teacher.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/Teacher.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/Teacher.js:unresolved:require",
+      "type": "CALLS",
+      "source": "src/models/Teacher.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "require"
+    },
+    {
+      "id": "calls:src/models/Teacher.js::class::Teacher::L5->method::constructor::L6:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/Teacher.js::class::Teacher::L5->method::constructor::L6",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "imports:src/models/Teacher.ts::import::User::L1:src/models/User.js::class::User::L4",
+      "type": "IMPORTS",
+      "source": "src/models/Teacher.ts::import::User::L1",
+      "target": "src/models/User.js::class::User::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "inherits:src/models/Teacher.ts::class::Teacher::L3:src/models/User.js::class::User::L4",
+      "type": "INHERITS",
+      "source": "src/models/Teacher.ts::class::Teacher::L3",
+      "target": "src/models/User.js::class::User::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/Teacher.ts::class::Teacher::L3->method::constructor::L4:unresolved:super",
+      "type": "CALLS",
+      "source": "src/models/Teacher.ts::class::Teacher::L3->method::constructor::L4",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "super"
+    },
+    {
+      "id": "calls:src/models/User.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/models/User.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::borrowBook::L11:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::borrowBook::L11:src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "target": "src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::borrowBook::L11:src/models/book.js::class::Book::L4->method::borrow::L11",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "target": "src/models/book.js::class::Book::L4->method::borrow::L11",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::borrowBook::L11:unresolved:push",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::borrowBook::L11",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::returnBook::L23:unresolved:findIndex",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "findIndex"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::returnBook::L23:src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "target": "src/models/book.js::class::Book::L4->method::getId::L26",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::returnBook::L23:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::returnBook::L23:src/models/User.js::class::User::L4->method::returnBook::L23",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "target": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::returnBook::L23:unresolved:splice",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::returnBook::L23",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "splice"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/models/User.js::class::User::L4->method::getBorrowedBooks::L33:src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "CALLS",
+      "source": "src/models/User.js::class::User::L4->method::getBorrowedBooks::L33",
+      "target": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/models/User.ts::import::Book::L1:src/models/book.js::class::Book::L4",
+      "type": "IMPORTS",
+      "source": "src/models/User.ts::import::Book::L1",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::borrowBook::L16:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::borrowBook::L16:src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "target": "src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::borrowBook::L16:src/models/book.js::class::Book::L4->method::borrow::L11",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "target": "src/models/book.js::class::Book::L4->method::borrow::L11",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::borrowBook::L16:unresolved:push",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::borrowBook::L16",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::returnBook::L33:unresolved:findIndex",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "findIndex"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::returnBook::L33:src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "target": "src/models/book.js::class::Book::L4->method::getId::L26",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::returnBook::L33:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::returnBook::L33:src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "target": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::returnBook::L33:unresolved:splice",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::returnBook::L33",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "splice"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47:unresolved:log",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47:src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "CALLS",
+      "source": "src/models/User.ts::class::User::L3->method::getBorrowedBooks::L47",
+      "target": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js:unresolved:defineProperty",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "defineProperty"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9:unresolved:push",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addBook::L9",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13:unresolved:push",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13:src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::addUser::L13",
+      "target": "src/models/User.js::class::User::L4->method::getName::L44",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17:unresolved:find",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "find"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17:src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "target": "src/models/book.js::class::Book::L4->method::getId::L26",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20:unresolved:find",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "find"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20:src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "target": "src/models/User.js::class::User::L4->method::getUserId::L41",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23:src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23:src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findBookById::L17",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23:src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::borrowBook::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32:src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::findUserById::L20",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32:src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "target": "src/services/LibraryManager.js::class::LibraryManager::L4->method::returnBook::L32",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40:unresolved:filter",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "filter"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40:src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "target": "src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40:src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAvailableBooks::L40",
+      "target": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46:src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "target": "src/models/User.js::class::User::L4->method::getName::L44",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46:src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.js::class::LibraryManager::L4->method::listAllUsers::L46",
+      "target": "src/models/User.js::class::User::L4->method::getUserId::L41",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/services/LibraryManager.ts::import::Book::L1:src/models/book.js::class::Book::L4",
+      "type": "IMPORTS",
+      "source": "src/services/LibraryManager.ts::import::Book::L1",
+      "target": "src/models/book.js::class::Book::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "imports:src/services/LibraryManager.ts::import::User::L2:src/models/User.js::class::User::L4",
+      "type": "IMPORTS",
+      "source": "src/services/LibraryManager.ts::import::User::L2",
+      "target": "src/models/User.js::class::User::L4",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8:unresolved:push",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addBook::L8",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13:unresolved:push",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "push"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13:src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::addUser::L13",
+      "target": "src/models/User.js::class::User::L4->method::getName::L44",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18:unresolved:find",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "find"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18:src/models/book.js::class::Book::L4->method::getId::L26",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "target": "src/models/book.js::class::Book::L4->method::getId::L26",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22:unresolved:find",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "find"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22:src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "target": "src/models/User.js::class::User::L4->method::getUserId::L41",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findBookById::L18",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26:src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::borrowBook::L26",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38:src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::findUserById::L22",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38:src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "target": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::returnBook::L38",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48:unresolved:filter",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "filter"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48:src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "target": "src/models/book.js::class::Book::L4->method::getAvailability::L23",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48:src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAvailableBooks::L48",
+      "target": "src/models/EBook.js::class::EBook::L5->method::getInfo::L10",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55:unresolved:log",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "log"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55:unresolved:forEach",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "target": null,
+      "resolved": false,
+      "revealed": false,
+      "target_name": "forEach"
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55:src/models/User.js::class::User::L4->method::getName::L44",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "target": "src/models/User.js::class::User::L4->method::getName::L44",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55:src/models/User.js::class::User::L4->method::getUserId::L41",
+      "type": "CALLS",
+      "source": "src/services/LibraryManager.ts::class::LibraryManager::L4->method::listAllUsers::L55",
+      "target": "src/models/User.js::class::User::L4->method::getUserId::L41",
+      "resolved": true,
+      "revealed": false
+    }
+  ]
+}

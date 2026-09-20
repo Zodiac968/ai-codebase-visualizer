@@ -1,0 +1,86 @@
+{
+  "nodes": [
+    {
+      "id": "repository",
+      "type": "repository",
+      "name": "repository",
+      "parent_id": null
+    },
+    {
+      "id": "pyresparser",
+      "type": "folder",
+      "name": "pyresparser",
+      "parent_id": "repository"
+    },
+    {
+      "id": "pyresparser/resume_parser.py",
+      "type": "file",
+      "name": "resume_parser.py",
+      "parent_id": "pyresparser"
+    },
+    {
+      "id": "pyresparser/resume_parser.py::class::ResumeParser::L10",
+      "type": "class",
+      "name": "ResumeParser",
+      "path": "pyresparser/resume_parser.py",
+      "parent_id": "pyresparser/resume_parser.py"
+    },
+    {
+      "id": "pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46",
+      "type": "method",
+      "name": "__get_basic_details",
+      "path": "pyresparser/resume_parser.py",
+      "parent_id": "pyresparser/resume_parser.py::class::ResumeParser::L10"
+    },
+    {
+      "id": "pyresparser/resume_parser.py::function::resume_result_wrapper::L88",
+      "type": "function",
+      "name": "resume_result_wrapper",
+      "path": "pyresparser/resume_parser.py",
+      "parent_id": "pyresparser/resume_parser.py"
+    }
+  ],
+  "edges": [
+    {
+      "id": "contains:repository:pyresparser",
+      "type": "CONTAINS",
+      "source": "repository",
+      "target": "pyresparser"
+    },
+    {
+      "id": "contains:pyresparser:pyresparser/resume_parser.py",
+      "type": "CONTAINS",
+      "source": "pyresparser",
+      "target": "pyresparser/resume_parser.py"
+    },
+    {
+      "id": "contains:pyresparser/resume_parser.py:pyresparser/resume_parser.py::class::ResumeParser::L10",
+      "type": "CONTAINS",
+      "source": "pyresparser/resume_parser.py",
+      "target": "pyresparser/resume_parser.py::class::ResumeParser::L10"
+    },
+    {
+      "id": "contains:pyresparser/resume_parser.py::class::ResumeParser::L10:pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46",
+      "type": "CONTAINS",
+      "source": "pyresparser/resume_parser.py::class::ResumeParser::L10",
+      "target": "pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46"
+    },
+    {
+      "id": "calls:pyresparser/resume_parser.py::function::resume_result_wrapper::L88:pyresparser/resume_parser.py::class::ResumeParser::L10",
+      "type": "CALLS",
+      "source": "pyresparser/resume_parser.py::function::resume_result_wrapper::L88",
+      "target": "pyresparser/resume_parser.py::class::ResumeParser::L10",
+      "resolved": true,
+      "revealed": false
+    },
+    {
+      "id": "calls:pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46:unresolved:get_number_of_pages",
+      "type": "CALLS",
+      "source": "pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46",
+      "target": null,
+      "target_name": "get_number_of_pages",
+      "resolved": false,
+      "revealed": false
+    }
+  ]
+}

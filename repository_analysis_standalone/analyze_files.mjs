@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'node:url';
 
 // Inline limits replacing external configuration
 const LIMITS = {
@@ -41,7 +42,6 @@ const scanAndAnalyzeRepo = (dirPath) => {
     const entries = fs.readdirSync(currentDir, { withFileTypes: true });
 
     for (const entry of entries) {
-      // 1. Enforce MAX_FILE_COUNT limit
       if (fileResults.length >= LIMITS.MAX_FILE_COUNT) {
         console.warn(`[Warning] Reached MAX_FILE_COUNT limit (${LIMITS.MAX_FILE_COUNT}). Stopping scan.`);
         return;
@@ -58,7 +58,6 @@ const scanAndAnalyzeRepo = (dirPath) => {
         const stats = fs.statSync(fullPath);
         totalRepoSize += stats.size;
 
-        // 2. Enforce MAX_REPOSITORY_SIZE limit
         if (totalRepoSize > LIMITS.MAX_REPOSITORY_SIZE) {
           throw new Error(`Repository total size exceeds limit of ${LIMITS.MAX_REPOSITORY_SIZE / (1024 * 1024)}MB.`);
         }
@@ -68,7 +67,6 @@ const scanAndAnalyzeRepo = (dirPath) => {
         if (supportedExts.has(ext)) {
           let lineCount = 0;
 
-          // 3. Enforce MAX_FILE_SIZE limit before reading contents into memory
           if (stats.size <= LIMITS.MAX_FILE_SIZE) {
             try {
               const content = fs.readFileSync(fullPath, 'utf8');
@@ -87,7 +85,7 @@ const scanAndAnalyzeRepo = (dirPath) => {
             language: LANGUAGE_MAP[ext] || 'unknown',
             size: stats.size,
             lineCount: lineCount,
-            truncated: stats.size > LIMITS.MAX_FILE_SIZE, // Flag if line counting was skipped
+            truncated: stats.size > LIMITS.MAX_FILE_SIZE,
           });
         }
       }
@@ -100,8 +98,10 @@ const scanAndAnalyzeRepo = (dirPath) => {
 
 export { scanAndAnalyzeRepo };
 
-// CLI execution wrapper
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+// Cross-platform CLI execution wrapper
+const currentFilePath = fileURLToPath(import.meta.url);
+
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(currentFilePath)) {
   const targetDir = process.argv[2] || '.';
   const resolvedTarget = path.resolve(process.cwd(), targetDir);
 

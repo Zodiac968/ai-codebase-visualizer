@@ -34,11 +34,99 @@ function getNodeName(node, sourceCode) {
 }
 
 /**
- * Generates a deterministic unique ID for a symbol.
+ * Generates a clean, deterministic unique ID for a symbol without duplicating file paths.
  */
-function generateSymbolId(file, type, name, startLine, parentId = null) {
-  const parentPrefix = parentId ? `${parentId}->` : '';
-  return `${file}::${parentPrefix}${type}::${name || 'anonymous'}::L${startLine}`;
+export function generateSymbolId(file, type, name, startLine, parentId = null) {
+  const normFile = file.replace(/\\/g, '/');
+  const safeName = name || 'anonymous';
+
+  if (parentId) {
+    const filePrefix = `${normFile}::`;
+    const cleanParent = parentId.startsWith(filePrefix)
+      ? parentId.slice(filePrefix.length)
+      : parentId;
+
+    return `${normFile}::${cleanParent}->${type}::${safeName}::L${startLine}`;
+  }
+
+  return `${normFile}::${type}::${safeName}::L${startLine}`;
+}
+
+/**
+ * Helper to extract imported symbol names/specifiers from import AST nodes.
+ */
+function getImportedSpecifiers(node, sourceCode) {
+  const specifiers = [];
+
+  if (node.type === 'import_from_statement') {
+    const importKwIndex = node.children.findIndex(
+      c => c.type === 'import' || sourceCode.slice(c.startIndex, c.endIndex) === 'import'
+    );
+
+    if (importKwIndex !== -1) {
+      const nameNodes = node.children
+        .slice(importKwIndex + 1)
+        .flatMap(c => (c.type === 'import_list' ? c.children : [c]))
+        .filter(c => ['identifier', 'dotted_name', 'aliased_import', 'wildcard_import'].includes(c.type));
+
+      for (const n of nameNodes) {
+        let symbolName = sourceCode.slice(n.startIndex, n.endIndex).trim();
+        if (n.type === 'aliased_import') {
+          const nameChild = n.children[0];
+          if (nameChild) symbolName = sourceCode.slice(nameChild.startIndex, nameChild.endIndex).trim();
+        }
+        if (symbolName && symbolName !== ',') {
+          specifiers.push(symbolName);
+        }
+      }
+    }
+  } else if (['import_statement', 'import_declaration'].includes(node.type)) {
+    const importSpecifiers = node.descendantsOfType('import_specifier');
+    const importClause = node.children.find(c => c.type === 'import_clause');
+
+    if (importSpecifiers.length > 0) {
+      for (const spec of importSpecifiers) {
+        const idNode = spec.children.find(c => c.type === 'identifier') || spec;
+        const name = sourceCode.slice(idNode.startIndex, idNode.endIndex).trim();
+        if (name) specifiers.push(name);
+      }
+    } else if (importClause) {
+      const defaultId = importClause.children.find(c => c.type === 'identifier');
+      const nsImport = importClause.descendantsOfType('namespace_import')[0];
+      const nameNode = defaultId || nsImport;
+      if (nameNode) {
+        const name = sourceCode.slice(nameNode.startIndex, nameNode.endIndex).trim();
+        if (name) specifiers.push(name);
+      }
+    } else {
+      const aliasedNodes = node.descendantsOfType('aliased_import');
+      const dottedNodes = node.descendantsOfType('dotted_name');
+
+      if (aliasedNodes.length > 0) {
+        for (const aliased of aliasedNodes) {
+          const nameNode = aliased.children[0];
+          if (nameNode) specifiers.push(sourceCode.slice(nameNode.startIndex, nameNode.endIndex).trim());
+        }
+      } else if (dottedNodes.length > 0) {
+        for (const dotted of dottedNodes) {
+          specifiers.push(sourceCode.slice(dotted.startIndex, dotted.endIndex).trim());
+        }
+      }
+    }
+  }
+
+  if (specifiers.length === 0) {
+    const stringNode = node.descendantsOfType('string')[0];
+    const dottedNode = node.descendantsOfType('dotted_name')[0];
+    const moduleName = stringNode
+      ? sourceCode.slice(stringNode.startIndex, stringNode.endIndex).replace(/['"]/g, '').trim()
+      : dottedNode
+      ? sourceCode.slice(dottedNode.startIndex, dottedNode.endIndex).trim()
+      : sourceCode.slice(node.startIndex, node.endIndex).trim();
+    if (moduleName) specifiers.push(moduleName);
+  }
+
+  return [...new Set(specifiers)];
 }
 
 /**
@@ -51,31 +139,25 @@ function extractImportSymbols(tree, sourceCode, filePath, language) {
   );
 
   for (const node of importNodes) {
-    const text = sourceCode.slice(node.startIndex, node.endIndex).trim();
     const startLine = node.startPosition.row + 1;
     const endLine = node.endPosition.row + 1;
 
-    // Identify module target
-    const stringNode = node.descendantsOfType('string')[0];
-    const dottedNode = node.descendantsOfType('dotted_name')[0];
-    const moduleName = stringNode
-      ? sourceCode.slice(stringNode.startIndex, stringNode.endIndex).replace(/['"]/g, '')
-      : dottedNode
-      ? sourceCode.slice(dottedNode.startIndex, dottedNode.endIndex)
-      : text;
+    const specifiers = getImportedSpecifiers(node, sourceCode);
 
-    const symbolId = generateSymbolId(filePath, 'import', moduleName, startLine);
+    for (const specName of specifiers) {
+      const symbolId = generateSymbolId(filePath, 'import', specName, startLine);
 
-    symbols.push({
-      id: symbolId,
-      name: moduleName,
-      type: 'import',
-      language,
-      file: filePath,
-      start_line: startLine,
-      end_line: endLine,
-      parent: null,
-    });
+      symbols.push({
+        id: symbolId,
+        name: specName,
+        type: 'import',
+        language,
+        file: filePath,
+        start_line: startLine,
+        end_line: endLine,
+        parent: null,
+      });
+    }
   }
 
   return symbols;
@@ -89,7 +171,6 @@ function extractASTSymbols(rootNode, sourceCode, filePath, language) {
 
   function walk(node, parentId = null) {
     for (const child of node.children) {
-      // Unpack export wrappers (JS/TS)
       if (['export_statement', 'export_declaration'].includes(child.type)) {
         walk(child, parentId);
         continue;
@@ -114,10 +195,9 @@ function extractASTSymbols(rootNode, sourceCode, filePath, language) {
           parent: parentId,
         });
 
-        // Extract class methods
         const methodNodes = child.descendantsOfType(['method_definition', 'function_definition']);
         for (const m of methodNodes) {
-          if (m === child) continue; // Skip self
+          if (m === child) continue;
 
           const mStartLine = m.startPosition.row + 1;
           const mEndLine = m.endPosition.row + 1;
@@ -137,7 +217,7 @@ function extractASTSymbols(rootNode, sourceCode, filePath, language) {
         }
       }
 
-      // 2. Functions (Top-level or nested functions)
+      // 2. Functions
       else if (['function_declaration', 'function_definition'].includes(child.type)) {
         const name = getNodeName(child, sourceCode);
         const funcId = generateSymbolId(filePath, 'function', name, startLine, parentId);
@@ -153,12 +233,11 @@ function extractASTSymbols(rootNode, sourceCode, filePath, language) {
           parent: parentId,
         });
 
-        // Walk inside function body for inner functions
         const body = child.childForFieldName('body');
         if (body) walk(body, funcId);
       }
 
-      // 3. JS/TS Arrow Functions (`const fn = () => {}`)
+      // 3. Arrow Functions
       else if (['lexical_declaration', 'variable_declaration'].includes(child.type)) {
         const declarator = child.descendantsOfType('variable_declarator')[0];
         const hasFunction = declarator?.children.some(c =>
@@ -272,85 +351,203 @@ export function extractRepositorySymbols(analysisJsonPath) {
   return allSymbols;
 }
 
-function nodeToJSON(node) {
-  const result = {
-    type: node.type,
-    isNamed: node.isNamed,
-    startPosition: node.startPosition,
-    endPosition: node.endPosition,
-  };
+/**
+ * Normalizes backslashes to forward slashes for cross-platform consistency.
+ */
+const normPath = (p) => (typeof p === 'string' ? p.replace(/\\/g, '/') : p);
 
-  if (node.childCount > 0) {
-    result.children = node.children.map(nodeToJSON);
+/**
+ * Builds fast lookup indices from symbols.json and repo file paths.
+ */
+function buildSymbolIndices(symbolsList = [], repoFilePaths = []) {
+  const lineMap = new Map();
+  const localNameMap = new Map();
+  const globalNameMap = new Map();
+  const fileSet = new Set();
+  const fileBaseMap = new Map();
+
+  for (const rawPath of repoFilePaths) {
+    const filePath = normPath(rawPath);
+    if (!filePath) continue;
+    fileSet.add(filePath);
+
+    const baseName = path.basename(filePath, path.extname(filePath));
+    if (!fileBaseMap.has(baseName)) {
+      fileBaseMap.set(baseName, filePath);
+    }
   }
 
-  return result;
-}
+  for (const sym of symbolsList) {
+    const filePath = normPath(sym.file || sym.path || '');
+    if (!filePath) continue;
 
-function processAnalysisFile(analysisJsonPath) {
-  const parser = new Parser();
-  
-  const repoRootDir = path.dirname(path.resolve(analysisJsonPath));
-  const rawData = fs.readFileSync(analysisJsonPath, 'utf8');
-  const entries = JSON.parse(rawData);
-
-  const output = {};
-
-  for (const entry of entries) {
-    const filePath = typeof entry === 'string' ? entry : entry.path;
-
-    if (!filePath) {
-      console.warn('[SKIP] Entry missing "path" property:', entry);
-      continue;
+    fileSet.add(filePath);
+    const baseName = path.basename(filePath, path.extname(filePath));
+    if (!fileBaseMap.has(baseName)) {
+      fileBaseMap.set(baseName, filePath);
     }
 
-    const absolutePath = path.resolve(repoRootDir, filePath);
-    const ext = path.extname(filePath);
-    const grammar = GRAMMAR_MAP[ext];
-
-    if (!grammar) {
-      console.warn(`[SKIP] No grammar mapped for extension "${ext}" (${filePath})`);
-      continue;
+    if (sym.start_line) {
+      lineMap.set(`${filePath}:L${sym.start_line}`, sym.id);
     }
 
-    if (!fs.existsSync(absolutePath)) {
-      console.warn(`[SKIP] File not found: ${absolutePath}`);
-      continue;
+    if (sym.name) {
+      localNameMap.set(`${filePath}:${sym.name}`, sym);
+
+      if (!globalNameMap.has(sym.name)) {
+        globalNameMap.set(sym.name, []);
+      }
+      globalNameMap.get(sym.name).push(sym);
     }
-
-    parser.setLanguage(grammar.grammar);
-    const sourceCode = fs.readFileSync(absolutePath, 'utf8');
-    const tree = parser.parse(sourceCode);
-
-    output[filePath] = {
-      meta: entry,
-      sexpr: tree.rootNode.toString(),
-      ast: nodeToJSON(tree.rootNode),
-    };
   }
 
-  return output;
+  return { lineMap, localNameMap, globalNameMap, fileSet, fileBaseMap };
 }
 
 /**
- * Extracts the function or method name being invoked in a call expression.
- * Handles: function(), method(), object.method(), this.method()
+ * Attempts to match a module string (e.g. "Courses" or "App/Courses") to a repository file.
  */
-function getCallTargetName(callNode, sourceCode) {
-  const funcNode = callNode.childForFieldName('function') || callNode.children[0];
-  if (!funcNode) return null;
+function findMatchingFile(modulePath, symbolIndices) {
+  if (!modulePath) return null;
 
-  // 1. Direct function call: calculateScore()
-  if (['identifier', 'property_identifier'].includes(funcNode.type)) {
+  const normalizedMod = normPath(modulePath);
+  const baseMod = path.basename(normalizedMod, path.extname(normalizedMod));
+
+  for (const filePath of symbolIndices.fileSet) {
+    if (filePath === normalizedMod) return filePath;
+  }
+
+  for (const filePath of symbolIndices.fileSet) {
+    const noExt = filePath.replace(/\.[^/.]+$/, '');
+    if (noExt === normalizedMod || noExt.endsWith(`/${normalizedMod}`) || noExt.endsWith(normalizedMod)) {
+      return filePath;
+    }
+  }
+
+  if (symbolIndices.fileBaseMap.has(baseMod)) {
+    return symbolIndices.fileBaseMap.get(baseMod);
+  }
+
+  return null;
+}
+
+/**
+ * Resolves a raw target string to a symbol ID, module file, or external fallback.
+ */
+function resolveTarget(targetName, currentFilePath, symbolIndices) {
+  if (!targetName) {
+    return { target: targetName, target_symbol_id: null, resolved: false };
+  }
+
+  const normFile = normPath(currentFilePath);
+
+  // 1. Direct local match (declarations only)
+  const localMatch = symbolIndices.localNameMap.get(`${normFile}:${targetName}`);
+  if (localMatch && localMatch.type !== 'import') {
+    return {
+      target: targetName,
+      target_symbol_id: localMatch.id,
+      resolved: true,
+    };
+  }
+
+  // 2. Direct global match (declarations only)
+  const globalMatches = symbolIndices.globalNameMap.get(targetName);
+  if (globalMatches && globalMatches.length > 0) {
+    const declMatch = globalMatches.find(s => s.type !== 'import');
+    if (declMatch) {
+      return {
+        target: targetName,
+        target_symbol_id: declMatch.id,
+        resolved: true,
+      };
+    }
+  }
+
+  // 3. Dot-qualified target (e.g. "Courses.ds_course" or "./models/PrintedBook.PrintedBook")
+  if (targetName.includes('.')) {
+    const parts = targetName.split('.');
+    const shortName = parts[parts.length - 1];
+    const modulePath = parts.slice(0, -1).join('/').replace(/\\/g, '/');
+
+    const shortNameMatches = symbolIndices.globalNameMap.get(shortName);
+    if (shortNameMatches && shortNameMatches.length > 0) {
+      const fileMatch = shortNameMatches.find(s => {
+        if (s.type === 'import') return false;
+        const symFile = normPath(s.file || '');
+        const baseName = path.basename(symFile, path.extname(symFile));
+        return (
+          symFile.includes(modulePath) ||
+          baseName === modulePath ||
+          symFile.replace(/\.[^/.]+$/, '').endsWith(modulePath)
+        );
+      });
+
+      if (fileMatch) {
+        return {
+          target: targetName,
+          target_symbol_id: fileMatch.id,
+          resolved: true,
+        };
+      }
+
+      const fallbackDecl = shortNameMatches.find(s => s.type !== 'import');
+      if (fallbackDecl) {
+        return {
+          target: targetName,
+          target_symbol_id: fallbackDecl.id,
+          resolved: true,
+        };
+      }
+    }
+
+    const matchedFile = findMatchingFile(modulePath, symbolIndices);
+    if (matchedFile) {
+      return {
+        target: targetName,
+        target_symbol_id: matchedFile,
+        resolved: true,
+      };
+    }
+  }
+
+  // 4. Fallback to file/module match
+  const matchedFile = findMatchingFile(targetName, symbolIndices);
+  if (matchedFile) {
+    return {
+      target: targetName,
+      target_symbol_id: matchedFile,
+      resolved: true,
+    };
+  }
+
+  return {
+    target: targetName,
+    target_symbol_id: null,
+    resolved: false,
+  };
+}
+
+function getCallTargetName(callNode, sourceCode) {
+  if (!callNode) return null;
+
+  let funcNode = callNode.childForFieldName('function') || callNode.childForFieldName('constructor');
+
+  if (!funcNode && callNode.type === 'new_expression') {
+    funcNode = callNode.children.find(c =>
+      ['identifier', 'property_identifier', 'member_expression', 'type_identifier'].includes(c.type)
+    );
+  }
+
+  if (!funcNode) funcNode = callNode.children[0];
+  if (!funcNode || funcNode.type === 'new') return null;
+
+  if (['identifier', 'property_identifier', 'type_identifier'].includes(funcNode.type)) {
     return sourceCode.slice(funcNode.startIndex, funcNode.endIndex);
   }
 
-  // 2. Member / Attribute call: userService.fetchUser(), this.clear()
   if (['member_expression', 'attribute'].includes(funcNode.type)) {
-    const propNode =
-      funcNode.childForFieldName('property') ||
-      funcNode.childForFieldName('attribute');
-
+    const propNode = funcNode.childForFieldName('property') || funcNode.childForFieldName('attribute');
     if (propNode) {
       return sourceCode.slice(propNode.startIndex, propNode.endIndex);
     }
@@ -361,34 +558,31 @@ function getCallTargetName(callNode, sourceCode) {
     }
   }
 
-  return null;
+  return sourceCode.slice(funcNode.startIndex, funcNode.endIndex);
 }
 
-/**
- * Clean target names by removing generic arguments: "Base<T, U>" -> "Base"
- */
 function cleanTargetName(rawTarget) {
   if (!rawTarget) return '';
-  // Strip generics and trim whitespace
-  const baseName = rawTarget.split('<')[0].trim();
-  // Handle qualified namespace names if needed (e.g. "Models.User" -> "User" or keep full path)
-  return baseName;
+  return rawTarget.split('<')[0].trim();
 }
 
 /**
- * Extracts IMPORTS relationships (module imports vs symbol imports).
+ * Extracts IMPORTS relationships mapped to symbol IDs or module files.
  */
-function extractImportRelationships(rootNode, sourceCode, filePath) {
+function extractImportRelationships(rootNode, sourceCode, filePath, symbolIndices) {
   const relationships = [];
+  const normFile = normPath(filePath);
 
-  for (const child of rootNode.children) {
-    if (!['import_statement', 'import_from_statement', 'import_declaration'].includes(child.type)) {
-      continue;
-    }
+  const importNodes = rootNode.descendantsOfType([
+    'import_statement',
+    'import_from_statement',
+    'import_declaration',
+  ]);
 
-    const text = sourceCode.slice(child.startIndex, child.endIndex).trim();
+  for (const child of importNodes) {
+    const startLine = child.startPosition.row + 1;
 
-    // --- Python: `from module import symbol1, symbol2` ---
+    // Python "from x import y"
     if (child.type === 'import_from_statement') {
       const importKwIndex = child.children.findIndex(
         c => c.type === 'import' || sourceCode.slice(c.startIndex, c.endIndex) === 'import'
@@ -402,7 +596,7 @@ function extractImportRelationships(rootNode, sourceCode, filePath) {
 
       const nameNodes = child.children
         .slice(importKwIndex + 1)
-        .flatMap(c => c.type === 'import_list' ? c.children : [c])
+        .flatMap(c => (c.type === 'import_list' ? c.children : [c]))
         .filter(c => ['identifier', 'dotted_name', 'aliased_import', 'wildcard_import'].includes(c.type));
 
       for (const n of nameNodes) {
@@ -412,88 +606,114 @@ function extractImportRelationships(rootNode, sourceCode, filePath) {
           if (nameChild) symbolName = sourceCode.slice(nameChild.startIndex, nameChild.endIndex).trim();
         }
 
-        let target = '';
-        if (!module) {
-          target = symbolName;
-        } else if (module.endsWith('.')) {
-          target = `${module}${symbolName}`;
-        } else {
-          target = `${module}.${symbolName}`;
-        }
+        const sourceId = generateSymbolId(normFile, 'import', symbolName, startLine);
+        const target = !module ? symbolName : module.endsWith('.') ? `${module}${symbolName}` : `${module}.${symbolName}`;
+        const targetRes = resolveTarget(target, normFile, symbolIndices);
 
         relationships.push({
           type: 'IMPORTS',
-          source: filePath,
-          target,
+          source: sourceId,
+          target: targetRes.target,
+          target_symbol_id: targetRes.target_symbol_id,
+          resolved: targetRes.resolved,
           import_kind: 'symbol'
         });
       }
-    }
+    } 
+    // JS / TS / Python standard imports
+    else {
+      const stringNode = child.descendantsOfType('string')[0];
+      const modulePath = stringNode
+        ? sourceCode.slice(stringNode.startIndex, stringNode.endIndex).replace(/['"]/g, '').trim()
+        : null;
 
-    // --- Python: `import os` or `import numpy as np` ---
-    else if (child.type === 'import_statement' && text.startsWith('import ')) {
-      const aliasedNodes = child.descendantsOfType('aliased_import');
-      const dottedNodes = child.descendantsOfType('dotted_name');
+      const importSpecifiers = child.descendantsOfType('import_specifier');
+      const importClause = child.children.find(c => c.type === 'import_clause');
 
-      if (aliasedNodes.length > 0) {
-        for (const aliased of aliasedNodes) {
-          const nameNode = aliased.children[0];
-          if (nameNode) {
-            relationships.push({
-              type: 'IMPORTS',
-              source: filePath,
-              target: sourceCode.slice(nameNode.startIndex, nameNode.endIndex).trim(),
-              import_kind: 'module'
-            });
-          }
-        }
-      } else if (dottedNodes.length > 0) {
-        for (const dotted of dottedNodes) {
+      // Named imports: import { PrintedBook, EBook } from './models/PrintedBook'
+      if (importSpecifiers.length > 0) {
+        for (const spec of importSpecifiers) {
+          const idNode = spec.children.find(c => c.type === 'identifier') || spec;
+          const symbolName = sourceCode.slice(idNode.startIndex, idNode.endIndex).trim();
+          const sourceId = generateSymbolId(normFile, 'import', symbolName, startLine);
+          const targetName = modulePath ? `${modulePath}.${symbolName}` : symbolName;
+          const targetRes = resolveTarget(targetName, normFile, symbolIndices);
+
           relationships.push({
             type: 'IMPORTS',
-            source: filePath,
-            target: sourceCode.slice(dotted.startIndex, dotted.endIndex).trim(),
+            source: sourceId,
+            target: targetRes.target,
+            target_symbol_id: targetRes.target_symbol_id,
+            resolved: targetRes.resolved,
+            import_kind: 'symbol'
+          });
+        }
+      } 
+      // Default or Namespace Import
+      else if (importClause) {
+        const defaultId = importClause.children.find(c => c.type === 'identifier');
+        const namespaceImport = importClause.descendantsOfType('namespace_import')[0];
+
+        const symbolName = defaultId 
+          ? sourceCode.slice(defaultId.startIndex, defaultId.endIndex).trim()
+          : namespaceImport 
+          ? sourceCode.slice(namespaceImport.startIndex, namespaceImport.endIndex).trim()
+          : null;
+
+        if (symbolName) {
+          const sourceId = generateSymbolId(normFile, 'import', symbolName, startLine);
+          const targetName = modulePath ? `${modulePath}.${symbolName}` : symbolName;
+          const targetRes = resolveTarget(targetName, normFile, symbolIndices);
+
+          relationships.push({
+            type: 'IMPORTS',
+            source: sourceId,
+            target: targetRes.target,
+            target_symbol_id: targetRes.target_symbol_id,
+            resolved: targetRes.resolved,
+            import_kind: 'symbol'
+          });
+        } else if (modulePath) {
+          const sourceId = generateSymbolId(normFile, 'import', modulePath, startLine);
+          const targetRes = resolveTarget(modulePath, normFile, symbolIndices);
+          relationships.push({
+            type: 'IMPORTS',
+            source: sourceId,
+            target: targetRes.target,
+            target_symbol_id: targetRes.target_symbol_id,
+            resolved: targetRes.resolved,
             import_kind: 'module'
           });
         }
       }
-    }
+      // Dotted names / Aliased imports
+      else {
+        const aliasedNodes = child.descendantsOfType('aliased_import');
+        const dottedNodes = child.descendantsOfType('dotted_name');
+        const targetsToProcess = [];
 
-    // --- JS / TS Imports ---
-    else {
-      const stringNode = child.descendantsOfType('string')[0];
-      if (stringNode) {
-        const module = sourceCode.slice(stringNode.startIndex, stringNode.endIndex).replace(/['"]/g, '').trim();
-        const specifiers = child.descendantsOfType('import_specifier');
-
-        if (specifiers.length > 0) {
-          for (const spec of specifiers) {
-            const id = spec.children.find(c => c.type === 'identifier') || spec;
-            const symbolName = sourceCode.slice(id.startIndex, id.endIndex).trim();
-            relationships.push({
-              type: 'IMPORTS',
-              source: filePath,
-              target: `${module}.${symbolName}`,
-              import_kind: 'symbol'
-            });
+        if (aliasedNodes.length > 0) {
+          for (const aliased of aliasedNodes) {
+            const nameNode = aliased.children[0];
+            if (nameNode) targetsToProcess.push(sourceCode.slice(nameNode.startIndex, nameNode.endIndex).trim());
           }
-
-          // Account for default import alongside named specifiers (e.g., `import React, { useState }`)
-          const importClause = child.children.find(c => c.type === 'import_clause');
-          if (importClause?.children.some(c => c.type === 'identifier')) {
-            relationships.push({
-              type: 'IMPORTS',
-              source: filePath,
-              target: module,
-              import_kind: 'module'
-            });
+        } else if (dottedNodes.length > 0) {
+          for (const dotted of dottedNodes) {
+            targetsToProcess.push(sourceCode.slice(dotted.startIndex, dotted.endIndex).trim());
           }
-        } else {
-          // Default import, wildcard `* as X`, or side-effect import
+        } else if (modulePath) {
+          targetsToProcess.push(modulePath);
+        }
+
+        for (const targetName of targetsToProcess) {
+          const sourceId = generateSymbolId(normFile, 'import', targetName, startLine);
+          const targetRes = resolveTarget(targetName, normFile, symbolIndices);
           relationships.push({
             type: 'IMPORTS',
-            source: filePath,
-            target: module,
+            source: sourceId,
+            target: targetRes.target,
+            target_symbol_id: targetRes.target_symbol_id,
+            resolved: targetRes.resolved,
             import_kind: 'module'
           });
         }
@@ -505,135 +725,124 @@ function extractImportRelationships(rootNode, sourceCode, filePath) {
 }
 
 /**
- * Extracts INHERITS, IMPLEMENTS, CALLS, and IMPORTS relationships.
+ * Extracts INHERITS, IMPLEMENTS, and CALLS relationships with resolved symbol IDs.
  */
-function extractRelationships(rootNode, sourceCode, filePath) {
+function extractRelationships(rootNode, sourceCode, filePath, symbolIndices) {
   const relationships = [];
+  const normFile = normPath(filePath);
 
-  // 1. Extract import relationships
-  const importRelationships = extractImportRelationships(rootNode, sourceCode, filePath);
+  // 1. Extract IMPORTS
+  const importRelationships = extractImportRelationships(rootNode, sourceCode, normFile, symbolIndices);
   relationships.push(...importRelationships);
 
-  // 2. Extract code structure relationships (INHERITS, IMPLEMENTS, CALLS)
-  function walk(node, currentClass = null, currentScope = null) {
+  // 2. Extract structural & call relationships
+  function walk(node, currentClassId = null, currentScopeId = null) {
     for (const child of node.children) {
       if (['export_statement', 'export_declaration'].includes(child.type)) {
-        walk(child, currentClass, currentScope);
+        walk(child, currentClassId, currentScopeId);
         continue;
       }
 
+      const startLine = child.startPosition.row + 1;
+      const matchedSymbolId = symbolIndices.lineMap.get(`${normFile}:L${startLine}`);
+
       // --- Class Inheritance & Implementation ---
       if (['class_definition', 'class_declaration', 'class_expression'].includes(child.type)) {
-        let className = getNodeName(child, sourceCode);
-        if (!className && child.parent?.type === 'variable_declarator') {
-          className = getNodeName(child.parent, sourceCode);
-        }
+        const classSourceId = matchedSymbolId || `${normFile}:${getNodeName(child, sourceCode) || 'Class'}`;
 
-        if (className) {
-          const sourceRef = `${filePath}:${className}`;
-
-          // Python Base Classes
-          const argList = child.children.find(c => c.type === 'argument_list');
-          if (argList) {
-            for (const arg of argList.children) {
-              if (['(', ')', ','].includes(arg.type) || arg.type === 'keyword_argument') continue;
-              const targetName = cleanTargetName(sourceCode.slice(arg.startIndex, arg.endIndex));
-              if (targetName) {
-                relationships.push({ type: 'INHERITS', source: sourceRef, target: targetName });
-              }
+        // Python Base Classes
+        const argList = child.children.find(c => c.type === 'argument_list');
+        if (argList) {
+          for (const arg of argList.children) {
+            if (['(', ')', ','].includes(arg.type) || arg.type === 'keyword_argument') continue;
+            const rawTarget = cleanTargetName(sourceCode.slice(arg.startIndex, arg.endIndex));
+            if (rawTarget) {
+              const targetRes = resolveTarget(rawTarget, normFile, symbolIndices);
+              relationships.push({
+                type: 'INHERITS',
+                source: classSourceId,
+                target: targetRes.target,
+                target_symbol_id: targetRes.target_symbol_id,
+                resolved: targetRes.resolved
+              });
             }
           }
-
-          // JS/TS Class Heritage
-          const heritage = child.children.find(c => c.type === 'class_heritage');
-          const heritageNodes = heritage ? heritage.children : child.children;
-
-          for (const hChild of heritageNodes) {
-            if (['extends_clause', 'extends_type_clause'].includes(hChild.type)) {
-              const targets = hChild.children.filter(c => !['extends', ','].includes(c.type));
-              for (const targetNode of targets) {
-                const targetName = cleanTargetName(sourceCode.slice(targetNode.startIndex, targetNode.endIndex));
-                if (targetName) {
-                  relationships.push({ type: 'INHERITS', source: sourceRef, target: targetName });
-                }
-              }
-            }
-
-            if (hChild.type === 'implements_clause') {
-              const targets = hChild.children.filter(c => !['implements', ','].includes(c.type));
-              for (const targetNode of targets) {
-                const targetName = cleanTargetName(sourceCode.slice(targetNode.startIndex, targetNode.endIndex));
-                if (targetName) {
-                  relationships.push({ type: 'IMPLEMENTS', source: sourceRef, target: targetName });
-                }
-              }
-            }
-          }
-
-          walk(child, className, currentScope);
-          continue;
         }
-      }
 
-      // --- Interface Heritage (TS) ---
-      if (child.type === 'interface_declaration') {
-        const interfaceName = getNodeName(child, sourceCode);
-        if (interfaceName) {
-          const sourceRef = `${filePath}:${interfaceName}`;
-          const extendsClause = child.children.find(c =>
-            ['extends_type_clause', 'extends_clause', 'interface_heritage'].includes(c.type)
-          );
+        // JS/TS Class Heritage
+        const heritage = child.children.find(c => c.type === 'class_heritage');
+        const heritageNodes = heritage ? heritage.children : child.children;
 
-          if (extendsClause) {
-            const targets = extendsClause.children.filter(c => !['extends', ','].includes(c.type));
+        for (const hChild of heritageNodes) {
+          if (['extends_clause', 'extends_type_clause'].includes(hChild.type)) {
+            const targets = hChild.children.filter(c => !['extends', ','].includes(c.type));
             for (const targetNode of targets) {
-              const targetName = cleanTargetName(sourceCode.slice(targetNode.startIndex, targetNode.endIndex));
-              if (targetName) {
-                relationships.push({ type: 'INHERITS', source: sourceRef, target: targetName });
+              const rawTarget = cleanTargetName(sourceCode.slice(targetNode.startIndex, targetNode.endIndex));
+              if (rawTarget) {
+                const targetRes = resolveTarget(rawTarget, normFile, symbolIndices);
+                relationships.push({
+                  type: 'INHERITS',
+                  source: classSourceId,
+                  target: targetRes.target,
+                  target_symbol_id: targetRes.target_symbol_id,
+                  resolved: targetRes.resolved
+                });
+              }
+            }
+          }
+
+          if (hChild.type === 'implements_clause') {
+            const targets = hChild.children.filter(c => !['implements', ','].includes(c.type));
+            for (const targetNode of targets) {
+              const rawTarget = cleanTargetName(sourceCode.slice(targetNode.startIndex, targetNode.endIndex));
+              if (rawTarget) {
+                const targetRes = resolveTarget(rawTarget, normFile, symbolIndices);
+                relationships.push({
+                  type: 'IMPLEMENTS',
+                  source: classSourceId,
+                  target: targetRes.target,
+                  target_symbol_id: targetRes.target_symbol_id,
+                  resolved: targetRes.resolved
+                });
               }
             }
           }
         }
-        walk(child, currentClass, currentScope);
+
+        walk(child, classSourceId, currentScopeId);
         continue;
       }
 
       // --- Scope Tracking ---
-      let activeScope = currentScope;
+      let activeScopeId = currentScopeId;
 
       if (['function_declaration', 'function_definition', 'method_definition'].includes(child.type)) {
-        const name = getNodeName(child, sourceCode);
-        if (name) {
-          activeScope = currentClass ? `${filePath}:${currentClass}.${name}` : `${filePath}:${name}`;
-        }
+        activeScopeId = matchedSymbolId || activeScopeId;
       } else if (['lexical_declaration', 'variable_declaration'].includes(child.type)) {
         const declarator = child.descendantsOfType('variable_declarator')[0];
-        const hasFunction = declarator?.children.some(c =>
-          ['arrow_function', 'function_expression'].includes(c.type)
-        );
+        const hasFunction = declarator?.children.some(c => ['arrow_function', 'function_expression'].includes(c.type));
         if (hasFunction) {
-          const name = getNodeName(declarator, sourceCode);
-          if (name) {
-            activeScope = currentClass ? `${filePath}:${currentClass}.${name}` : `${filePath}:${name}`;
-          }
+          activeScopeId = matchedSymbolId || activeScopeId;
         }
       }
 
-      // --- Function/Method Calls ---
-      if (['call_expression', 'call'].includes(child.type)) {
-        if (activeScope) {
-          const targetName = getCallTargetName(child, sourceCode);
-          if (targetName) {
-            relationships.push({
-              type: 'CALLS',
-              source: activeScope,
-              target: targetName,
-            });
-          }
+      // --- Function/Method Calls and Instantiations (Supports top-level/root scope) ---
+      if (['call_expression', 'call', 'new_expression'].includes(child.type)) {
+        const sourceId = activeScopeId || normFile; // Fallback to file path for root-level calls
+        const rawTargetName = getCallTargetName(child, sourceCode);
+        if (rawTargetName) {
+          const targetRes = resolveTarget(rawTargetName, normFile, symbolIndices);
+          relationships.push({
+            type: 'CALLS',
+            source: sourceId,
+            target: targetRes.target,
+            target_symbol_id: targetRes.target_symbol_id,
+            resolved: targetRes.resolved
+          });
         }
       }
 
-      walk(child, currentClass, activeScope);
+      walk(child, currentClassId, activeScopeId);
     }
   }
 
@@ -641,19 +850,29 @@ function extractRelationships(rootNode, sourceCode, filePath) {
   return relationships;
 }
 
-export function generateRelationships(analysisJsonPath) {
+/**
+ * Main Entry: Reads symbols.json alongside analysis.json and generates normalized relationships.
+ */
+export function generateRelationships(analysisJsonPath, symbolsJsonPath = null) {
   const parser = new Parser();
   const repoRootDir = path.dirname(path.resolve(analysisJsonPath));
   const entries = JSON.parse(fs.readFileSync(analysisJsonPath, 'utf8'));
 
+  const repoFilePaths = entries.map(e => (typeof e === 'string' ? e : e.path)).filter(Boolean);
+
+  const symPath = symbolsJsonPath || path.join(repoRootDir, 'symbols.json');
+  let symbolsList = [];
+  if (fs.existsSync(symPath)) {
+    symbolsList = JSON.parse(fs.readFileSync(symPath, 'utf8'));
+  }
+
+  const symbolIndices = buildSymbolIndices(symbolsList, repoFilePaths);
   const allRelationships = [];
 
-  for (const entry of entries) {
-    const filePath = typeof entry === 'string' ? entry : entry.path;
-    if (!filePath) continue;
-
-    const absolutePath = path.resolve(repoRootDir, filePath);
-    const ext = path.extname(filePath);
+  for (const filePath of repoFilePaths) {
+    const normFilePath = normPath(filePath);
+    const absolutePath = path.resolve(repoRootDir, normFilePath);
+    const ext = path.extname(normFilePath);
     const grammar = GRAMMAR_MAP[ext];
 
     if (!grammar || !fs.existsSync(absolutePath)) continue;
@@ -662,22 +881,17 @@ export function generateRelationships(analysisJsonPath) {
     const sourceCode = fs.readFileSync(absolutePath, 'utf8');
     const tree = parser.parse(sourceCode);
 
-    const fileRelationships = extractRelationships(tree.rootNode, sourceCode, filePath);
+    const fileRelationships = extractRelationships(tree.rootNode, sourceCode, normFilePath, symbolIndices);
     allRelationships.push(...fileRelationships);
   }
 
   return { relationships: allRelationships };
 }
 
-// const results = processAnalysisFile('./lowclass/analysis.json');
-// fs.writeFileSync('syntax_trees.json', JSON.stringify(results, null, 2));
-// console.log('Successfully parsed files and saved to syntax_trees.json');
-
-// Get path from command-line argument or default to './AI-Resume-Analyzer'
+// Execution Entrypoint
 const inputPath = process.argv[2] || './AI-Resume-Analyzer';
 const resolvedPath = path.resolve(process.cwd(), inputPath);
 
-// Determine analysis.json path (whether user passed folder or file)
 let analysisJsonPath = resolvedPath;
 if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isDirectory()) {
   analysisJsonPath = path.join(resolvedPath, 'analysis.json');
@@ -688,10 +902,9 @@ if (!fs.existsSync(analysisJsonPath)) {
   process.exit(1);
 }
 
-// Output directory (saves generated files next to analysis.json)
 const outputDir = path.dirname(analysisJsonPath);
 
-// 1. Extract and save basic structure
+// 1. Extract and save symbols
 const basicStructure = extractRepositorySymbols(analysisJsonPath);
 const basicStructurePath = path.join(outputDir, 'symbols.json');
 fs.writeFileSync(basicStructurePath, JSON.stringify(basicStructure, null, 2));

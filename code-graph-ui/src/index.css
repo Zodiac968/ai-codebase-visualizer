@@ -1,0 +1,19 @@
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Completely hide and disable interaction on node handles/dots */
+.react-flow__handle {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Remove default focus bounding box outlines around nodes */
+.react-flow__node:focus,
+.react-flow__node.selected {
+  outline: none !important;
+  box-shadow: none !important;
+}

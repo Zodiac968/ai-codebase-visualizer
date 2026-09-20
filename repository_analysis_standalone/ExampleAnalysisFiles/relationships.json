@@ -1,0 +1,42 @@
+{
+  "relationships" : [
+    {
+        "type": "CALLS",
+        "source": "pyresparser/resume_parser.py::function::resume_result_wrapper::L88",
+        "target": "ResumeParser",
+        "target_symbol_id": "pyresparser/resume_parser.py::class::ResumeParser::L10",
+        "resolved": true,
+        "revealed": false
+    },
+    {
+        "type": "CALLS",
+        "source": "pyresparser/resume_parser.py::class::ResumeParser::L10->method::__get_basic_details::L46",
+        "target": "get_number_of_pages",
+        "target_symbol_id": null,
+        "resolved": false,
+        "revealed": false
+    },
+    {
+        "type": "INHERITS",
+        "source": "pyresparser/custom_parser.py::class::CustomParser::L5",
+        "target": "ResumeParser",
+        "target_symbol_id": "pyresparser/resume_parser.py::class::ResumeParser::L10",
+        "resolved": true
+    },
+    {
+        "type": "IMPORTS",
+        "source": "pyresparser/resume_parser.py",
+        "target": "docx",
+        "target_symbol_id": null,
+        "target_name": "docx",
+        "resolved": false
+    },
+    {
+        "type": "USES",
+        "source": "pyresparser/resume_parser.py::class::ResumeParser::L10->method::extract_text::L30",
+        "target": "OBJECT_DETECTOR",
+        "target_symbol_id": "pyresparser/utils.py::variable::OBJECT_DETECTOR::L12",
+        "resolved": true
+    }
+  ]
+}
