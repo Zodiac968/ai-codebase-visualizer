@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CodebaseGraph from "./components/graph/CodebaseGraph";
+import CodeViewer from "./components/code/CodeViewer";
 import { NODE_TYPE_COLORS } from "./utils/graph/constants";
 import "./App.css";
 
@@ -10,12 +11,21 @@ export default function App() {
   const [error, setError] = useState(null);
   const [repoData, setRepoData] = useState(null);
 
+  // Code Viewer State
+  const [selectedTarget, setSelectedTarget] = useState(null);
+  const [fileContent, setFileContent] = useState("");
+  const [fileLoading, setFileLoading] = useState(false);
+  const [fileError, setFileError] = useState(null);
+  const [fileCache, setFileCache] = useState({});
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!repoUrl.trim()) return;
 
     setLoading(true);
     setError(null);
+    setSelectedTarget(null);
+    setFileCache({});
     setLoadingMessage("Cloning repository and executing AST analysis pipeline...");
 
     try {
@@ -55,6 +65,51 @@ export default function App() {
   const handleReset = () => {
     setRepoData(null);
     setError(null);
+    setSelectedTarget(null);
+    setFileContent("");
+    setFileCache({});
+  };
+
+  const handleNodeSelect = async (target) => {
+    setSelectedTarget(target);
+
+    if (!target?.path || !repoData?.repositoryId) return;
+
+    // Check in-memory cache
+    if (fileCache[target.path]) {
+      setFileContent(fileCache[target.path]);
+      setFileError(null);
+      return;
+    }
+
+    setFileLoading(true);
+    setFileError(null);
+
+    try {
+      const response = await fetch(
+        `/api/repositories/${repoData.repositoryId}/file?filePath=${encodeURIComponent(target.path)}`
+      );
+      const resData = await response.json();
+
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.error || `Failed to fetch file: ${target.path}`);
+      }
+
+      const content = resData.data.content;
+      setFileContent(content);
+      setFileCache((prev) => ({ ...prev, [target.path]: content }));
+    } catch (err) {
+      console.error("Error loading file:", err);
+      setFileError(err.message || "Failed to load file content.");
+    } finally {
+      setFileLoading(false);
+    }
+  };
+
+  const handleCloseCodeViewer = () => {
+    setSelectedTarget(null);
+    setFileContent("");
+    setFileError(null);
   };
 
   const nodeCount = repoData?.graph?.nodes?.length || 0;
@@ -102,36 +157,55 @@ export default function App() {
       {/* Main View Area */}
       <main className="app-main">
         {repoData?.graph ? (
-          <>
-            <CodebaseGraph graphData={repoData.graph} />
-
-            {/* Bottom-left Legend */}
-            <div className="graph-legend">
-              <div className="legend-title">Node Hierarchy & Types</div>
-              <div className="legend-items">
-                {Object.entries(NODE_TYPE_COLORS).map(([type, color]) => (
-                  <div key={type} className="legend-item">
-                    <span
-                      className="legend-dot"
-                      style={{ backgroundColor: color }}
-                    />
-                    <span>{type}</span>
-                  </div>
-                ))}
+          <div className="workspace-layout">
+            {/* Left Panel: Code Viewer */}
+            {selectedTarget && (
+              <div className="workspace-code-pane">
+                <CodeViewer
+                  target={selectedTarget}
+                  content={fileContent}
+                  loading={fileLoading}
+                  error={fileError}
+                  onClose={handleCloseCodeViewer}
+                />
               </div>
-              <div
-                style={{
-                  marginTop: 10,
-                  fontSize: 10,
-                  color: "#64748b",
-                  borderTop: "1px solid #f1f5f9",
-                  paddingTop: 6,
-                }}
-              >
-                Tip: Click <strong>[+]</strong> or <strong>[-]</strong> nodes to expand or collapse subtrees.
+            )}
+
+            {/* Right Panel: Interactive Graph */}
+            <div className="workspace-graph-pane">
+              <CodebaseGraph
+                graphData={repoData.graph}
+                onNodeSelect={handleNodeSelect}
+              />
+
+              {/* Bottom-left Legend */}
+              <div className="graph-legend">
+                <div className="legend-title">Node Hierarchy & Types</div>
+                <div className="legend-items">
+                  {Object.entries(NODE_TYPE_COLORS).map(([type, color]) => (
+                    <div key={type} className="legend-item">
+                      <span
+                        className="legend-dot"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span>{type}</span>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    marginTop: 10,
+                    fontSize: 10,
+                    color: "#64748b",
+                    borderTop: "1px solid #f1f5f9",
+                    paddingTop: 6,
+                  }}
+                >
+                  Tip: Click <strong>file</strong>, <strong>class</strong>, or <strong>function</strong> to inspect code on the left.
+                </div>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="landing-view">
             <div className="input-card">

@@ -40,3 +40,29 @@ export const getRepositoryGraph = (repositoryId) => {
     }
     return JSON.parse(fs.readFileSync(graphFilePath, 'utf8'));
 };
+
+export const getRepositoryFile = (repositoryId, relativeFilePath) => {
+    const repoBase = path.resolve(process.cwd(), 'repositories', repositoryId);
+    if (!fs.existsSync(repoBase)) {
+        return null;
+    }
+
+    // Sanitize relative path and prevent directory traversal
+    const safePath = path.normalize(relativeFilePath).replace(/^(\.\.[\/\\])+/, '');
+    const fullPath = path.resolve(repoBase, safePath);
+
+    // Ensure target path is strictly within the repository base directory
+    if (!fullPath.startsWith(repoBase)) {
+        throw new Error('Access denied: Invalid file path.');
+    }
+
+    if (!fs.existsSync(fullPath) || !fs.statSync(fullPath).isFile()) {
+        return null;
+    }
+
+    const content = fs.readFileSync(fullPath, 'utf8');
+    return {
+        path: safePath.replace(/\\/g, '/'),
+        content,
+    };
+};

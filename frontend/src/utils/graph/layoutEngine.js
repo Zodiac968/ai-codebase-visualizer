@@ -282,7 +282,10 @@ export function computeHierarchyLayout(
 
     layoutedNodes.push({
       id: strNodeId,
-      data: { label: `${prefix}${node.type.toUpperCase()}: ${node.name}` },
+      data: {
+        label: `${prefix}${node.type.toUpperCase()}: ${node.name}`,
+        rawNode: node,
+      },
       position: { x: nodeX, y: nodeY },
       width: LAYOUT_CONFIG.NODE_WIDTH || 180,
       height: LAYOUT_CONFIG.NODE_HEIGHT || 50,

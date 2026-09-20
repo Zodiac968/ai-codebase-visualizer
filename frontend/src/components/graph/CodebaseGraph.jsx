@@ -30,7 +30,7 @@ const edgeTypes = {
   trunkStep: TrunkEdge, // Custom edge for vertical trunk routing
 };
 
-export default function CodebaseGraph({ graphData }) {
+export default function CodebaseGraph({ graphData, onNodeSelect }) {
   const rawNodes = graphData?.nodes || [];
   const rawEdges = graphData?.edges || [];
 
@@ -38,6 +38,38 @@ export default function CodebaseGraph({ graphData }) {
     rawNodes,
     rawEdges,
   );
+
+  const handleNodeClick = (_, flowNode) => {
+    // 1. Toggle expansion for hierarchical navigation
+    toggleNodeExpansion(flowNode.id);
+
+    // 2. If node is a code symbol or file, notify parent to display in Code Viewer
+    const raw = flowNode?.data?.rawNode;
+    if (raw && onNodeSelect) {
+      const codeEntityTypes = new Set([
+        'file',
+        'class',
+        'function',
+        'method',
+        'variable',
+        'interface',
+        'type',
+      ]);
+
+      const targetPath = raw.path || (raw.type === 'file' ? raw.id : null);
+
+      if (targetPath && (codeEntityTypes.has(raw.type) || raw.start_line)) {
+        onNodeSelect({
+          id: raw.id,
+          type: raw.type,
+          name: raw.name,
+          path: targetPath,
+          startLine: raw.start_line || 1,
+          endLine: raw.end_line || raw.start_line || 1,
+        });
+      }
+    }
+  };
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -47,7 +79,7 @@ export default function CodebaseGraph({ graphData }) {
           edges={edges}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-          onNodeClick={(_, node) => toggleNodeExpansion(node.id)}
+          onNodeClick={handleNodeClick}
           nodesConnectable={false}
           fitView
         >

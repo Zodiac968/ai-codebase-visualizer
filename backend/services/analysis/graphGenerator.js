@@ -81,6 +81,8 @@ export const generateGraphData = (fileInfoList = [], symbolsList = [], relations
       id: fileId,
       type: 'file',
       name: fileName,
+      path: fileId,
+      start_line: 1,
       parent_id: currentParentId,
     });
 
@@ -106,6 +108,8 @@ export const generateGraphData = (fileInfoList = [], symbolsList = [], relations
         id: filePath,
         type: 'file',
         name: filePath.split('/').pop(),
+        path: filePath,
+        start_line: 1,
         parent_id: 'repository',
       });
       addEdge({
@@ -122,11 +126,21 @@ export const generateGraphData = (fileInfoList = [], symbolsList = [], relations
       symbolLookupByFileAndName.set(key, symId);
     }
 
+    // Extract line numbers from symbol or ID fallback
+    let startLine = symbol.start_line;
+    let endLine = symbol.end_line;
+    if (!startLine && typeof symId === 'string') {
+      const match = symId.match(/::L(\d+)$/);
+      if (match) startLine = parseInt(match[1], 10);
+    }
+
     addNode({
       id: symId,
       type: symbol.type,
       name: symbol.name,
       path: filePath,
+      start_line: startLine,
+      end_line: endLine,
       parent_id: symbol.parent ? normPath(symbol.parent) : filePath,
     });
   }

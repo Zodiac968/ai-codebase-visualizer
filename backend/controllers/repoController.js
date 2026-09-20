@@ -1,5 +1,5 @@
 import { isValidGithubUrl } from '../utils/validators.js';
-import { analyzeRepository, getRepositoryGraph } from '../services/repoService.js';
+import { analyzeRepository, getRepositoryGraph, getRepositoryFile } from '../services/repoService.js';
 
 const addRepository = async (req, res) => {
     const { repoUrl } = req.body;
@@ -60,4 +60,37 @@ const getGraph = async (req, res) => {
     }
 };
 
-export { addRepository, getGraph };
+const getFile = async (req, res) => {
+    const { id } = req.params;
+    const { filePath } = req.query;
+
+    if (!filePath) {
+        return res.status(400).json({
+            success: false,
+            error: "filePath query parameter is required.",
+        });
+    }
+
+    try {
+        const fileData = getRepositoryFile(id, filePath);
+        if (!fileData) {
+            return res.status(404).json({
+                success: false,
+                error: `File not found: ${filePath}`,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: fileData,
+        });
+    } catch (error) {
+        console.error("Failed to retrieve file content:", error);
+        return res.status(403).json({
+            success: false,
+            error: error.message || "Failed to retrieve file content.",
+        });
+    }
+};
+
+export { addRepository, getGraph, getFile };

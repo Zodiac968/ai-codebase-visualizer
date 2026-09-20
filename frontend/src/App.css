@@ -88,6 +88,46 @@
   overflow: hidden;
 }
 
+/* Workspace Split View */
+.workspace-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.workspace-code-pane {
+  width: 42%;
+  min-width: 340px;
+  max-width: 680px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 10;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.workspace-graph-pane {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
 /* Input / Landing Screen */
 .landing-view {
   flex: 1;
