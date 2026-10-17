@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CodebaseGraph from "./components/graph/CodebaseGraph";
 import CodeViewer from "./components/code/CodeViewer";
+import HybridSearch from "./components/search/HybridSearch";
+import {
+  computeAncestorRevealSet,
+  buildHighlightContext,
+} from "./utils/graph/highlightUtils";
 import { NODE_TYPE_COLORS } from "./utils/graph/constants";
 import "./App.css";
 
@@ -18,6 +23,13 @@ export default function App() {
   const [fileLoading, setFileLoading] = useState(false);
   const [fileError, setFileError] = useState(null);
   const [fileCache, setFileCache] = useState({});
+
+  // AI Search Panel State (Phase 4.3 / 4.4)
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Phase 4.5 Feature Search Graph Highlighting State
+  const [highlightContext, setHighlightContext] = useState(null);
+  const [searchRevealSet, setSearchRevealSet] = useState(null);
 
   // Fetch recent repositories from PostgreSQL
   const fetchRecentRepos = async () => {
@@ -57,6 +69,8 @@ export default function App() {
     setError(null);
     setSelectedTarget(null);
     setFileCache({});
+    setHighlightContext(null);
+    setSearchRevealSet(null);
     setLoadingMessage(
       forceRefresh
         ? "Re-cloning and re-analyzing fresh from GitHub..."
@@ -119,7 +133,61 @@ export default function App() {
     setSelectedTarget(null);
     setFileContent("");
     setFileCache({});
+    setIsSearchOpen(false);
+    setHighlightContext(null);
+    setSearchRevealSet(null);
     fetchRecentRepos();
+  };
+
+  // Phase 4.5: Feature Search Visualization Handlers
+  const handleVisualizeInGraph = (searchData) => {
+    if (!searchData || !repoData?.graph?.nodes) return;
+
+    const ctx = buildHighlightContext(searchData, searchData.focusedNodeId || null);
+    const targetIds = [
+      ...Array.from(ctx.primaryNodeIds),
+      ...Array.from(ctx.relatedNodeIds),
+    ];
+
+    const revealSet = computeAncestorRevealSet(targetIds, repoData.graph.nodes);
+    setHighlightContext(ctx);
+    setSearchRevealSet(revealSet);
+  };
+
+  const handleFocusGraphNode = (nodeId) => {
+    if (!nodeId) return;
+    setHighlightContext((prev) => {
+      if (!prev) {
+        return {
+          isActive: true,
+          primaryNodeIds: new Set([String(nodeId)]),
+          relatedNodeIds: new Set(),
+          relevantEdgeKeys: new Set(),
+          focusedNodeId: String(nodeId),
+          seedCount: 1,
+          expandedCount: 0,
+        };
+      }
+      return {
+        ...prev,
+        focusedNodeId: String(nodeId),
+      };
+    });
+
+    if (repoData?.graph?.nodes) {
+      setSearchRevealSet((prev) => {
+        const reveal = computeAncestorRevealSet([String(nodeId)], repoData.graph.nodes);
+        if (!prev) return reveal;
+        const merged = new Set(prev);
+        reveal.forEach((id) => merged.add(id));
+        return merged;
+      });
+    }
+  };
+
+  const handleClearHighlight = () => {
+    setHighlightContext(null);
+    setSearchRevealSet(null);
   };
 
   const handleNodeSelect = async (target) => {
@@ -203,6 +271,19 @@ export default function App() {
               )}
               <button
                 className="btn-secondary"
+                onClick={() => setIsSearchOpen((prev) => !prev)}
+                title="Toggle AI Code Search & Graph Context Retrieval"
+                style={{
+                  background: isSearchOpen ? "#fdf2f8" : "#ffffff",
+                  borderColor: isSearchOpen ? "#ec4899" : "#cbd5e1",
+                  color: isSearchOpen ? "#db2777" : "#334155",
+                  fontWeight: 600,
+                }}
+              >
+                ⚡ AI Search
+              </button>
+              <button
+                className="btn-secondary"
                 onClick={handleReanalyze}
                 disabled={loading}
                 title="Force re-clone and re-parse repository"
@@ -241,6 +322,9 @@ export default function App() {
               <CodebaseGraph
                 graphData={repoData.graph}
                 onNodeSelect={handleNodeSelect}
+                highlightContext={highlightContext}
+                searchRevealSet={searchRevealSet}
+                onClearHighlight={handleClearHighlight}
               />
 
               {/* Bottom-left Legend */}
@@ -270,6 +354,25 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {/* Right Drawer: AI Hybrid & Context Search */}
+            {isSearchOpen && repoData?.repositoryId && (
+              <HybridSearch
+                repoId={repoData.repositoryId}
+                onSelectSymbol={handleNodeSelect}
+                onClose={() => setIsSearchOpen(false)}
+                onVisualizeInGraph={handleVisualizeInGraph}
+                onFocusNode={handleFocusGraphNode}
+                onClearGraphHighlight={handleClearHighlight}
+                isGraphHighlighted={Boolean(highlightContext?.isActive)}
+                activeHighlightId={
+                  highlightContext?.focusedNodeId ||
+                  (highlightContext?.primaryNodeIds?.size === 1
+                    ? Array.from(highlightContext.primaryNodeIds)[0]
+                    : null)
+                }
+              />
+            )}
           </div>
         ) : (
           <div className="landing-view">

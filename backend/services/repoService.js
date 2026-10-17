@@ -5,6 +5,8 @@ import { promisify } from 'util';
 import { scanAndAnalyzeRepo } from '../utils/fileAnalyzer.js';
 import { runAnalysisPipeline } from './analysis/pipeline.js';
 import { normalizeGithubUrl } from '../utils/urlNormalizer.js';
+import { generateEmbeddingDocuments } from './analysis/embeddingGenerator.js';
+import { saveEmbeddings } from './embeddingDbService.js';
 import {
   findRepoById,
   upsertRepo,
@@ -122,6 +124,17 @@ export const analyzeRepository = async (repoUrl, forceRefresh = false) => {
     console.error('[PostgreSQL] Failed to persist repository to database:', dbSaveErr.message);
   }
 
+  // 6. Generate and Persist Embedding Documents
+  try {
+    const embeddingDocs = generateEmbeddingDocuments(symbols, relationships);
+    if (embeddingDocs.length > 0) {
+      await saveEmbeddings(id, embeddingDocs);
+      console.log(`[EmbeddingGenerator] Saved ${embeddingDocs.length} embedding documents for: ${id}`);
+    }
+  } catch (embedErr) {
+    console.warn('[EmbeddingGenerator] Embedding document generation failed (non-fatal):', embedErr.message);
+  }
+
   return {
     repositoryId: id,
     url: canonicalUrl,
@@ -190,3 +203,11 @@ export const getRepositoryFile = (repositoryId, relativeFilePath) => {
 export const getRecentRepositories = async (limit = 10) => {
   return listRecentRepos(limit);
 };
+
+/**
+ * Phase 4.4: Graph Expansion and Context Retrieval
+ */
+export const retrieveRepoContext = async (repoId, queryText, options = {}) => {
+  const { retrieveContext } = await import('./context/contextRetrievalService.js');
+  return retrieveContext(repoId, queryText, options);
+};

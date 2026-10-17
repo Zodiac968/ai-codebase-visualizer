@@ -91,7 +91,8 @@ function getLowestVisibleAncestor(nodeId, visibleNodeIds, nodeMap) {
 export function computeHierarchyLayout(
   allNodes,
   allEdges = [],
-  expandedNodes
+  expandedNodes,
+  highlightContext = null
 ) {
   const childrenMap = new Map();
   const parentIds = new Set();
@@ -280,11 +281,29 @@ export function computeHierarchyLayout(
     const nodeY = y;
     const parentCenterX = nodeX + LAYOUT_CONFIG.NODE_WIDTH / 2;
 
+    const isSearchActive = Boolean(highlightContext?.isActive);
+    const isPrimary = Boolean(highlightContext?.primaryNodeIds?.has(strNodeId));
+    const isRelated = Boolean(highlightContext?.relatedNodeIds?.has(strNodeId));
+    const isFocused = Boolean(highlightContext?.focusedNodeId === strNodeId);
+
+    const isSelected = Boolean(isSearchActive && (isPrimary || isFocused));
+
+    const { style: nodeStyle, zIndex } = buildNodeStyle(node.type, isExpanded, hasChildren, {
+      isPrimary,
+      isRelated,
+      isFocused,
+      isSearchActive,
+    });
+
     layoutedNodes.push({
       id: strNodeId,
+      selected: isSelected,
       data: {
         label: `${prefix}${node.type.toUpperCase()}: ${node.name}`,
         rawNode: node,
+        isPrimary,
+        isRelated,
+        isFocused,
       },
       position: { x: nodeX, y: nodeY },
       width: LAYOUT_CONFIG.NODE_WIDTH || 180,
@@ -295,7 +314,8 @@ export function computeHierarchyLayout(
       },
       targetPosition: Position.Top,
       sourcePosition: Position.Bottom,
-      style: buildNodeStyle(node.type, isExpanded, hasChildren),
+      zIndex,
+      style: nodeStyle,
     });
 
     if (metrics.groups.length === 0) return;
@@ -353,6 +373,8 @@ export function computeHierarchyLayout(
   const layoutedNodeMap = new Map(layoutedNodes.map((n) => [n.id, n]));
 
   // PASS 3: Hierarchy Edges (Dynamic trunkX based on rendered stack positions)
+  const isSearchActive = Boolean(highlightContext?.isActive);
+
   expandedSet.forEach((parentId) => {
     if (!visibleNodeIds.has(parentId)) return;
     const parentNode = layoutedNodeMap.get(parentId);
@@ -373,10 +395,10 @@ export function computeHierarchyLayout(
 
             if (childNodes.length === 0) return;
 
-            const stackMinX = Math.min(...childNodes.map((n) => n.position.x));
+            const stackMinX = Math.min(...childNodes.map((cn) => cn.position.x));
             const stackMaxX = Math.max(
               ...childNodes.map(
-                (n) => n.position.x + (n.width || LAYOUT_CONFIG.NODE_WIDTH)
+                (cn) => cn.position.x + (cn.width || LAYOUT_CONFIG.NODE_WIDTH)
               )
             );
             const stackCenterX = (stackMinX + stackMaxX) / 2;
@@ -440,7 +462,7 @@ export function computeHierarchyLayout(
     });
   });
 
-  // PASS 4: Outgoing Relationships
+  // PASS 4: Outgoing Relationships (Natural rendering when source is expanded)
   const outgoingEdgeKeys = new Set();
 
   allEdges.forEach((rawEdge) => {

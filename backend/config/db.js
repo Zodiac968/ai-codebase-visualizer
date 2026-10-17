@@ -30,6 +30,8 @@ export const query = (text, params) => pool.query(text, params);
  */
 export async function initDb() {
   const schemaSql = `
+    CREATE EXTENSION IF NOT EXISTS vector;
+
     CREATE TABLE IF NOT EXISTS repositories (
       id VARCHAR(255) PRIMARY KEY,
       full_name VARCHAR(255) NOT NULL UNIQUE,
@@ -52,6 +54,26 @@ export async function initDb() {
 
     CREATE INDEX IF NOT EXISTS idx_repos_full_name ON repositories(full_name);
     CREATE INDEX IF NOT EXISTS idx_repos_created_at ON repositories(created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS symbol_embeddings (
+      id TEXT PRIMARY KEY,
+      repo_id VARCHAR(255) NOT NULL REFERENCES repositories(id) ON DELETE CASCADE,
+      symbol_id TEXT NOT NULL,
+      content TEXT,
+      metadata JSONB,
+      embedding vector(384),
+      model_id VARCHAR(128),
+      content_hash VARCHAR(64),
+      vector_dimensions INT DEFAULT 384,
+      tsv tsvector,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_se_repo_id ON symbol_embeddings(repo_id);
+    CREATE INDEX IF NOT EXISTS idx_se_symbol_id ON symbol_embeddings(symbol_id);
+    CREATE INDEX IF NOT EXISTS idx_se_model_id ON symbol_embeddings(model_id);
+    CREATE INDEX IF NOT EXISTS idx_se_tsv ON symbol_embeddings USING GIN(tsv);
   `;
 
   try {

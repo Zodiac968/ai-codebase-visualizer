@@ -5,6 +5,12 @@ import {
   getRepositoryFile,
   getRecentRepositories,
 } from '../services/repoService.js';
+import { generateEmbeddingDocuments } from '../services/analysis/embeddingGenerator.js';
+import { saveEmbeddings } from '../services/embeddingDbService.js';
+import { findRepoById } from '../services/repoDbService.js';
+import { generateVectorEmbeddings } from '../services/vectorService.js';
+import { hybridSearch } from '../services/search/hybridSearchService.js';
+import { retrieveContext } from '../services/context/contextRetrievalService.js';
 
 const addRepository = async (req, res) => {
   const { repoUrl, forceRefresh } = req.body;
@@ -119,4 +125,134 @@ const getRecent = async (req, res) => {
   }
 };
 
-export { addRepository, getGraph, getFile, getRecent };
+/**
+ * Phase 4.1: Generate embedding documents from analyzed repository symbols.
+ */
+const generateEmbeddings = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const repoRecord = await findRepoById(id);
+    if (!repoRecord) {
+      return res.status(404).json({ success: false, error: `Repository "${id}" not found.` });
+    }
+
+    const symbols = repoRecord.symbols || [];
+    const relationships = repoRecord.relationships || [];
+
+    const docs = generateEmbeddingDocuments(symbols, relationships);
+    const savedCount = await saveEmbeddings(id, docs);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        repositoryId: id,
+        documentsGenerated: docs.length,
+        documentsSaved: savedCount,
+      },
+    });
+  } catch (error) {
+    console.error('Embedding generation failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to generate embedding documents.',
+    });
+  }
+};
+
+/**
+ * Phase 4.2: Generate vector embeddings using local BAAI/bge-small-en-v1.5 model.
+ */
+const generateVectors = async (req, res) => {
+  const { id } = req.params;
+  const { force } = req.body || {};
+
+  try {
+    const result = await generateVectorEmbeddings(id, { force: Boolean(force) });
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Vector generation failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to generate vector embeddings.',
+    });
+  }
+};
+
+/**
+ * Phase 4.3: Hybrid search combining lexical + semantic + RRF.
+ */
+const searchHybrid = async (req, res) => {
+  const { id } = req.params;
+  const { query: queryText, limit, k, lexicalLimit, semanticLimit } = req.body || {};
+
+  try {
+    const result = await hybridSearch(id, queryText, {
+      limit,
+      k,
+      lexicalLimit,
+      semanticLimit,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Hybrid search failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Hybrid search failed.',
+    });
+  }
+};
+
+/**
+ * Phase 4.4: Context retrieval with graph expansion.
+ */
+const searchContext = async (req, res) => {
+  const { id } = req.params;
+  const {
+    query: queryText,
+    seedLimit,
+    maxDepth,
+    maxExpandedNodes,
+    maxTotalSymbols,
+    maxContextTokens,
+  } = req.body || {};
+
+  try {
+    const result = await retrieveContext(id, queryText, {
+      seedLimit,
+      maxDepth,
+      maxExpandedNodes,
+      maxTotalSymbols,
+      maxContextTokens,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Context retrieval failed:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Context retrieval failed.',
+    });
+  }
+};
+
+export {
+  addRepository,
+  getGraph,
+  getFile,
+  getRecent,
+  generateEmbeddings,
+  generateVectors,
+  searchHybrid,
+  searchContext,
+};

@@ -427,3 +427,64 @@
 .example-chip:hover {
   background: #e2e8f0;
 }
+
+/* Phase 4.5 Graph Highlight Banner */
+.graph-highlight-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #fbcfe8;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.15);
+  z-index: 50;
+  animation: bannerFadeIn 0.2s ease;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.banner-icon {
+  font-size: 14px;
+}
+
+.banner-clear-btn {
+  background: #fdf2f8;
+  color: #db2777;
+  border: 1px solid #fbcfe8;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.banner-clear-btn:hover {
+  background: #fce7f3;
+  color: #be185d;
+}
+

@@ -1,5 +1,11 @@
-import React from "react";
-import { ReactFlow, Background, Controls } from "@xyflow/react";
+import React, { useRef, useEffect } from "react";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  ReactFlowProvider,
+  useReactFlow,
+} from "@xyflow/react";
 import {
   SmartEdgeProvider,
   createSmartEdge,
@@ -30,13 +36,79 @@ const edgeTypes = {
   trunkStep: TrunkEdge, // Custom edge for vertical trunk routing
 };
 
-export default function CodebaseGraph({ graphData, onNodeSelect }) {
+/**
+ * Inner controller managing camera viewport transitions:
+ * - Saves previous viewport when search is activated
+ * - Centers the graph on screen when reverting back to previous state
+ * - Pans and zooms to focused target nodes
+ */
+function ViewportController({ nodes, highlightContext }) {
+  const { setCenter, fitView, getViewport } = useReactFlow();
+  const prevFocusedRef = useRef(null);
+  const prevActiveRef = useRef(false);
+  const savedViewportRef = useRef(null);
+
+  // Focus camera smoothly on selected search node
+  useEffect(() => {
+    const focusedId = highlightContext?.focusedNodeId;
+    if (focusedId && focusedId !== prevFocusedRef.current) {
+      prevFocusedRef.current = focusedId;
+      const targetNode = nodes.find((n) => n.id === focusedId);
+      if (targetNode && targetNode.position) {
+        const w = targetNode.width || 180;
+        const h = targetNode.height || 50;
+        const cx = targetNode.position.x + w / 2;
+        const cy = targetNode.position.y + h / 2;
+        setCenter(cx, cy, { zoom: 1.15, duration: 500 });
+      }
+    } else if (!focusedId) {
+      prevFocusedRef.current = null;
+    }
+  }, [highlightContext?.focusedNodeId, nodes, setCenter]);
+
+  // Frame view when search is activated, and center on screen when reverting back
+  useEffect(() => {
+    if (highlightContext?.isActive && !prevActiveRef.current) {
+      prevActiveRef.current = true;
+      // Save current exploration viewport
+      try {
+        savedViewportRef.current = getViewport();
+      } catch {
+        savedViewportRef.current = null;
+      }
+      const timer = setTimeout(() => {
+        fitView({ duration: 500, padding: 0.25 });
+      }, 60);
+      return () => clearTimeout(timer);
+    } else if (!highlightContext?.isActive && prevActiveRef.current) {
+      prevActiveRef.current = false;
+      // Reverting back: center the restored graph exploration on the screen
+      const timer = setTimeout(() => {
+        fitView({ duration: 500, padding: 0.25 });
+      }, 60);
+      savedViewportRef.current = null;
+      return () => clearTimeout(timer);
+    }
+  }, [highlightContext?.isActive, fitView, getViewport]);
+
+  return null;
+}
+
+function InnerGraph({
+  graphData,
+  onNodeSelect,
+  highlightContext = null,
+  searchRevealSet = null,
+  onClearHighlight = null,
+}) {
   const rawNodes = graphData?.nodes || [];
   const rawEdges = graphData?.edges || [];
 
   const { nodes, edges, toggleNodeExpansion } = useCodebaseGraph(
     rawNodes,
     rawEdges,
+    highlightContext,
+    searchRevealSet
   );
 
   const handleNodeClick = (_, flowNode) => {
@@ -73,6 +145,32 @@ export default function CodebaseGraph({ graphData, onNodeSelect }) {
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      {/* Floating Search Highlight Banner */}
+      {highlightContext?.isActive && (
+        <div className="graph-highlight-banner" role="status" aria-live="polite">
+          <div className="banner-content">
+            <span className="banner-icon">🔍</span>
+            <span className="banner-text">
+              <strong>Feature Search Active:</strong>{" "}
+              {highlightContext.seedCount} Primary Match{highlightContext.seedCount === 1 ? "" : "es"}
+              {highlightContext.expandedCount > 0
+                ? `, ${highlightContext.expandedCount} Related Symbol${highlightContext.expandedCount === 1 ? "" : "s"}`
+                : ""}
+            </span>
+          </div>
+          {onClearHighlight && (
+            <button
+              className="banner-clear-btn"
+              onClick={onClearHighlight}
+              title="Clear search highlights and restore graph state"
+              aria-label="Clear Search Highlights"
+            >
+              ✕ Clear Highlight
+            </button>
+          )}
+        </div>
+      )}
+
       <SmartEdgeProvider nodes={nodes}>
         <ReactFlow
           nodes={nodes}
@@ -85,8 +183,20 @@ export default function CodebaseGraph({ graphData, onNodeSelect }) {
         >
           <Background />
           <Controls />
+          <ViewportController
+            nodes={nodes}
+            highlightContext={highlightContext}
+          />
         </ReactFlow>
       </SmartEdgeProvider>
     </div>
+  );
+}
+
+export default function CodebaseGraph(props) {
+  return (
+    <ReactFlowProvider>
+      <InnerGraph {...props} />
+    </ReactFlowProvider>
   );
 }

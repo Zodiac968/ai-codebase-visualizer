@@ -1,0 +1,72 @@
+[
+  {
+    "id": "q1",
+    "query": "compileETag",
+    "type": "exact_identifier",
+    "expected_symbol_id": "lib/utils.js::function::compileETag::L130",
+    "description": "Exact function name for ETag compilation"
+  },
+  {
+    "id": "q2",
+    "query": "app.listen",
+    "type": "exact_identifier",
+    "expected_symbol_id": "lib/application.js::method::listen::L598",
+    "description": "Member method for listening on port"
+  },
+  {
+    "id": "q3",
+    "query": "compileTrust",
+    "type": "exact_identifier",
+    "expected_symbol_id": "lib/utils.js::function::compileTrust::L194",
+    "description": "Function for compiling trust proxy configuration"
+  },
+  {
+    "id": "q4",
+    "query": "app.route",
+    "type": "exact_identifier",
+    "expected_symbol_id": "lib/application.js::method::route::L256",
+    "description": "Method returning an instance of single route"
+  },
+  {
+    "id": "q5",
+    "query": "app.enabled",
+    "type": "exact_identifier",
+    "expected_symbol_id": "lib/application.js::method::enabled::L420",
+    "description": "Method to check if a setting is enabled"
+  },
+  {
+    "id": "q6",
+    "query": "listen for incoming connections on a port",
+    "type": "conceptual",
+    "expected_symbol_id": "lib/application.js::method::listen::L598",
+    "description": "Natural language request for HTTP server connection binding"
+  },
+  {
+    "id": "q7",
+    "query": "generate etag header for response",
+    "type": "conceptual",
+    "expected_symbol_id": "lib/utils.js::function::compileETag::L130",
+    "description": "Conceptual query for ETag generation"
+  },
+  {
+    "id": "q8",
+    "query": "middleware registration for request handling",
+    "type": "conceptual",
+    "expected_symbol_id": "lib/application.js::method::use::L190",
+    "description": "Conceptual query for mounting middleware functions"
+  },
+  {
+    "id": "q9",
+    "query": "render a view or template for response",
+    "type": "conceptual",
+    "expected_symbol_id": "lib/application.js::method::render::L522",
+    "description": "Conceptual query for rendering view templates"
+  },
+  {
+    "id": "q10",
+    "query": "check if a setting configuration is enabled",
+    "type": "conceptual",
+    "expected_symbol_id": "lib/application.js::method::enabled::L420",
+    "description": "Conceptual query for checking truthiness of application settings"
+  }
+]
