@@ -1,7 +1,8 @@
 import { pool, query } from '../config/db.js';
 
 /**
- * Batch saves symbol embedding documents into PostgreSQL with upsert.
+ * Batch saves symbol embedding documents into PostgreSQL with upsert, replacing the
+ * repository's previous document set (documents for symbols not in embeddingDocs are deleted).
  * 
  * @param {string} repoId - Repository identifier (slug)
  * @param {Array<{ symbol_id: string, content: string, metadata: Object }>} embeddingDocs
@@ -47,6 +48,17 @@ export async function saveEmbeddings(repoId, embeddingDocs) {
       `;
 
       await client.query(sql, params);
+    }
+
+    // embeddingDocs is the repository's complete document set. Remove rows for symbols
+    // that no longer exist (e.g. after re-analysis shifted symbol IDs) so search never
+    // returns symbols missing from the current graph.
+    const prunedRes = await client.query(
+      `DELETE FROM symbol_embeddings WHERE repo_id = $1 AND NOT (symbol_id = ANY($2::text[]))`,
+      [repoId, embeddingDocs.map((doc) => doc.symbol_id)]
+    );
+    if (prunedRes.rowCount > 0) {
+      console.log(`[PostgreSQL] Pruned ${prunedRes.rowCount} stale embedding documents for ${repoId}.`);
     }
 
     await client.query('COMMIT');
