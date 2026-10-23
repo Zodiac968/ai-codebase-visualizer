@@ -46,11 +46,13 @@ export async function retrieveContext(repoId, queryText, options = {}) {
   const maxContextTokens = Math.max(500, options.maxContextTokens || DEFAULT_MAX_CONTEXT_TOKENS);
 
   // 2. Gather seed symbols via Hybrid Retrieval (Lexical + Semantic + RRF)
+  const hybridStart = Date.now();
   const hybridResult = await hybridSearch(repoId, queryClean, {
     limit: seedLimit,
   });
 
   const rawSeeds = hybridResult.results || [];
+  const hybridMs = Date.now() - hybridStart;
   if (rawSeeds.length === 0) {
     return {
       query: queryClean,
@@ -68,11 +70,13 @@ export async function retrieveContext(repoId, queryText, options = {}) {
         budget_tokens: maxContextTokens,
         budget_utilization_pct: 0,
         truncated: false,
+        timings_ms: { hybrid_retrieval: hybridMs, expansion_and_context: 0 },
       },
     };
   }
 
   // 3. Expand graph around seed symbols
+  const expansionStart = Date.now();
   const expansionResult = await expandGraph(repoId, rawSeeds, {
     maxDepth,
     maxExpandedNodes,
@@ -92,6 +96,11 @@ export async function retrieveContext(repoId, queryText, options = {}) {
       maxTotalSymbols,
     }
   );
+
+  contextPackage.statistics.timings_ms = {
+    hybrid_retrieval: hybridMs,
+    expansion_and_context: Date.now() - expansionStart,
+  };
 
   return contextPackage;
 }

@@ -11,6 +11,9 @@ import { findRepoById } from '../services/repoDbService.js';
 import { generateVectorEmbeddings } from '../services/vectorService.js';
 import { hybridSearch } from '../services/search/hybridSearchService.js';
 import { retrieveContext } from '../services/context/contextRetrievalService.js';
+import { answerRepositoryQuestion, QaError } from '../services/qa/qaService.js';
+import { LlmError } from '../services/llm/groqClient.js';
+import { QA_CONFIG } from '../config/llm.js';
 
 const addRepository = async (req, res) => {
   const { repoUrl, forceRefresh } = req.body;
@@ -246,7 +249,72 @@ const searchContext = async (req, res) => {
   }
 };
 
+const LLM_ERROR_STATUS = {
+  not_configured: 503,
+  auth: 502,
+  rate_limited: 429,
+  timeout: 504,
+  model_unavailable: 503,
+  bad_request: 502,
+  malformed_response: 502,
+  upstream: 502,
+};
+
+let activeQaRequests = 0;
+
+/**
+ * Phase 4.6: Retrieval-augmented codebase Q&A using Groq.
+ */
+const askQuestion = async (req, res) => {
+  const { id } = req.params;
+  const { question } = req.body || {};
+
+  if (activeQaRequests >= QA_CONFIG.MAX_CONCURRENT_REQUESTS) {
+    return res.status(429).json({
+      success: false,
+      error: 'Too many questions are being processed right now. Please try again shortly.',
+      error_code: 'too_many_requests',
+    });
+  }
+
+  activeQaRequests++;
+  try {
+    const result = await answerRepositoryQuestion(id, question);
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    if (error instanceof QaError) {
+      return res.status(error.status).json({
+        success: false,
+        error: error.message,
+        error_code: error.code,
+        stage: error.stage,
+      });
+    }
+    if (error instanceof LlmError) {
+      console.error(`[QA] Generation failed for ${id}: ${error.code}`);
+      return res.status(LLM_ERROR_STATUS[error.code] || 502).json({
+        success: false,
+        error: error.message,
+        error_code: error.code,
+        stage: 'generation',
+      });
+    }
+    console.error('Q&A request failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to answer the question.',
+      error_code: 'internal_error',
+    });
+  } finally {
+    activeQaRequests--;
+  }
+};
+
 export {
+  askQuestion,
   addRepository,
   getGraph,
   getFile,

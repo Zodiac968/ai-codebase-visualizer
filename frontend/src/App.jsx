@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CodebaseGraph from "./components/graph/CodebaseGraph";
 import CodeViewer from "./components/code/CodeViewer";
 import HybridSearch from "./components/search/HybridSearch";
+import AskAI from "./components/qa/AskAI";
 import {
   computeAncestorRevealSet,
   buildHighlightContext,
@@ -26,6 +27,17 @@ export default function App() {
 
   // AI Search Panel State (Phase 4.3 / 4.4)
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Ask AI Q&A Panel State (Phase 4.6)
+  const [isAskOpen, setIsAskOpen] = useState(false);
+
+  // Vector Generation State (Phase 4.2 on-demand trigger)
+  const [vectorJob, setVectorJob] = useState({ status: "idle", message: "" });
+  const currentRepoIdRef = useRef(null);
+
+  useEffect(() => {
+    currentRepoIdRef.current = repoData?.repositoryId || null;
+  }, [repoData?.repositoryId]);
 
   // Phase 4.5 Feature Search Graph Highlighting State
   const [highlightContext, setHighlightContext] = useState(null);
@@ -71,6 +83,7 @@ export default function App() {
     setFileCache({});
     setHighlightContext(null);
     setSearchRevealSet(null);
+    setVectorJob({ status: "idle", message: "" });
     setLoadingMessage(
       forceRefresh
         ? "Re-cloning and re-analyzing fresh from GitHub..."
@@ -127,13 +140,60 @@ export default function App() {
     }
   };
 
+  // Generates semantic vectors for the current repository's embedding documents.
+  // Incremental on the backend: symbols whose content hash is unchanged are skipped.
+  const handleGenerateVectors = async () => {
+    const repoId = repoData?.repositoryId;
+    if (!repoId || vectorJob.status === "running") return;
+
+    setVectorJob({ status: "running", message: "" });
+
+    try {
+      const response = await fetch(`/api/repositories/${repoId}/vectors/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force: false }),
+      });
+
+      let result = null;
+      try {
+        result = await response.json();
+      } catch {
+        result = null;
+      }
+
+      // Ignore the response if the user switched repositories meanwhile
+      if (currentRepoIdRef.current !== repoId) return;
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Vector generation failed with status ${response.status}.`);
+      }
+
+      const { total = 0, generated = 0, skipped = 0 } = result.data || {};
+      setVectorJob({
+        status: "done",
+        total,
+        message: `${total} vectors ready (${generated} newly generated, ${skipped} unchanged)`,
+      });
+    } catch (err) {
+      if (currentRepoIdRef.current !== repoId) return;
+      console.error("Vector generation failed:", err);
+      setVectorJob({
+        status: "error",
+        message: err.message || "Vector generation failed. Ensure the backend is running.",
+      });
+    }
+  };
+
   const handleReset = () => {
+    setVectorJob({ status: "idle", message: "" });
     setRepoData(null);
     setError(null);
     setSelectedTarget(null);
     setFileContent("");
     setFileCache({});
     setIsSearchOpen(false);
+    setIsAskOpen(false);
     setHighlightContext(null);
     setSearchRevealSet(null);
     fetchRecentRepos();
@@ -271,7 +331,10 @@ export default function App() {
               )}
               <button
                 className="btn-secondary"
-                onClick={() => setIsSearchOpen((prev) => !prev)}
+                onClick={() => {
+                  setIsSearchOpen((prev) => !prev);
+                  setIsAskOpen(false);
+                }}
                 title="Toggle AI Code Search & Graph Context Retrieval"
                 style={{
                   background: isSearchOpen ? "#fdf2f8" : "#ffffff",
@@ -281,6 +344,47 @@ export default function App() {
                 }}
               >
                 ⚡ AI Search
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  setIsAskOpen((prev) => !prev);
+                  setIsSearchOpen(false);
+                }}
+                title="Ask natural-language questions answered from the repository source"
+                style={{
+                  background: isAskOpen ? "#fdf2f8" : "#ffffff",
+                  borderColor: isAskOpen ? "#ec4899" : "#cbd5e1",
+                  color: isAskOpen ? "#db2777" : "#334155",
+                  fontWeight: 600,
+                }}
+              >
+                💬 Ask AI
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={handleGenerateVectors}
+                disabled={loading || vectorJob.status === "running"}
+                title={
+                  vectorJob.message
+                    ? `${vectorJob.message}\nClick to generate again.`
+                    : "Generate 384-d semantic vectors (BAAI/bge-small-en-v1.5) for this repository. Unchanged symbols are skipped."
+                }
+                style={
+                  vectorJob.status === "done"
+                    ? { color: "#15803d", borderColor: "#86efac", background: "#f0fdf4" }
+                    : vectorJob.status === "error"
+                      ? { color: "#b45309", borderColor: "#fcd34d", background: "#fffbeb" }
+                      : undefined
+                }
+              >
+                {vectorJob.status === "running"
+                  ? "⏳ Vectors..."
+                  : vectorJob.status === "done"
+                    ? `✓ ${vectorJob.total} Vectors`
+                    : vectorJob.status === "error"
+                      ? "⚠ Vectors"
+                      : "🧠 Vectors"}
               </button>
               <button
                 className="btn-secondary"
@@ -371,6 +475,20 @@ export default function App() {
                     ? Array.from(highlightContext.primaryNodeIds)[0]
                     : null)
                 }
+              />
+            )}
+
+            {/* Right Drawer: Ask AI Grounded Q&A (Phase 4.6) */}
+            {isAskOpen && repoData?.repositoryId && (
+              <AskAI
+                key={repoData.repositoryId}
+                repoId={repoData.repositoryId}
+                onSelectSymbol={handleNodeSelect}
+                onClose={() => setIsAskOpen(false)}
+                onVisualizeInGraph={handleVisualizeInGraph}
+                onFocusNode={handleFocusGraphNode}
+                onClearGraphHighlight={handleClearHighlight}
+                isGraphHighlighted={Boolean(highlightContext?.isActive)}
               />
             )}
           </div>

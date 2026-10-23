@@ -1,0 +1,144 @@
+/* Ask AI (Phase 4.6) — extends HybridSearch drawer styles */
+.qa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qa-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 64px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.qa-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.qa-hint {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.qa-answer-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #1e293b;
+}
+
+.qa-answer-paragraph {
+  margin: 0 0 10px;
+}
+
+.qa-answer-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.qa-answer-list {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.qa-answer-list li {
+  margin-bottom: 4px;
+}
+
+.qa-inline-code {
+  font-family: "JetBrains Mono", Consolas, monospace;
+  font-size: 12px;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.qa-cite-chip {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 16px;
+  font-family: "JetBrains Mono", Consolas, monospace;
+  color: #be185d;
+  background: #fdf2f8;
+  border: 1px solid #f9a8d4;
+  border-radius: 4px;
+  cursor: pointer;
+  vertical-align: baseline;
+}
+
+.qa-cite-chip:hover {
+  background: #fce7f3;
+  border-color: #ec4899;
+}
+
+.qa-cite-static {
+  cursor: inherit;
+}
+
+.qa-cite-invalid {
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px dashed #f59e0b;
+  cursor: help;
+  text-decoration: line-through;
+}
+
+.qa-notice {
+  font-size: 12px;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+}
+
+.qa-notice-warning {
+  color: #92400e;
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.qa-limitations {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #475569;
+  background: #f8fafc;
+  border-left: 3px solid #94a3b8;
+  padding: 6px 10px;
+  border-radius: 0 6px 6px 0;
+}
+
+.qa-invalid-details {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #92400e;
+}
+
+.qa-invalid-details summary {
+  cursor: pointer;
+}
+
+.qa-invalid-details ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.qa-meta {
+  margin-top: 12px;
+  font-size: 10.5px;
+  color: #94a3b8;
+  text-align: right;
+}
